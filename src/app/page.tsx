@@ -25,25 +25,6 @@ export default function Home() {
           priority
         />
 
-        <div className="grid grid-cols-3 grid-rows-3 gap-4">
-          <div>
-            <Image 
-              src="https://en.numista.com/catalogue/photos/allemagne-pre1945/62fd0623996a17.35679200-360.jpg" 
-              alt="German Mark"
-              width={180}
-              height={120}
-            />
-          </div>
-          <div>2</div>
-          <div>3</div>
-          <div>4</div>
-          <div>5</div>
-          <div>6</div>
-          <div>7</div>
-          <div>8</div>
-          <div>9</div>
-        </div>
-
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
