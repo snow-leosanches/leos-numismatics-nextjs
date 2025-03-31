@@ -1,9 +1,10 @@
 "use client";
 
-import { Footer } from "@/components/footer";
-import { useSnowplow } from "@/hooks/useSnowplow";
 import Image from "next/image";
 import { useEffect } from "react";
+
+import { Footer } from "@/components/footer";
+import { useSnowplow } from "@/hooks/useSnowplow";
 
 export default function Home() {
   const snowplowTracker = useSnowplow();
