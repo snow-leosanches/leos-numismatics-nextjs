@@ -4,7 +4,7 @@ import Link from "next/link";
 export interface BanknoteRowProps {
   id: string;
   imageUrl: string;
-  altText: string;
+  title: string;
   description: string;
   price: number;
 }
@@ -14,13 +14,13 @@ export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) =>
     <div className="flex flex-col gap-2">
       <Image
         src={props.imageUrl}
-        alt={props.altText}
+        alt={props.title}
         width={180}
         height={120}
       />
     </div>
     <div className="flex flex-col gap-2">
-      <h2 className="text-lg">{props.altText}</h2>
+      <h2 className="text-lg">{props.title}</h2>
       <p className="text-sm text-gray-500">{props.description}</p>
       <p className="text-sm text-gray-500">Price: ${props.price.toFixed(2)}</p>
       <div className="flex gap-2">

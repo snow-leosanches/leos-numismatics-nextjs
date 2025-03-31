@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import React from 'react';
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { Nav } from "../components/nav";
+import { PageTracker } from '@/components/page-tracker';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,11 +14,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Leo's Numismatics",
-  description: "Collectible banknotes from all over the world",
-};
 
 export default function RootLayout({
   children,
@@ -30,6 +26,7 @@ export default function RootLayout({
         <Nav />
         {children}
       </body>
+      <PageTracker />
     </html>
   );
 }

@@ -1,11 +1,7 @@
-import { useState, useEffect } from "react";
+import React from 'react';
+import { AnalyticsContext } from '@/contexts';
 
-import { BrowserTracker, newTracker } from "@snowplow/browser-tracker";
-import { SnowplowEcommercePlugin } from "@snowplow/browser-plugin-snowplow-ecommerce";
-import { PerformanceNavigationTimingPlugin } from "@snowplow/browser-plugin-performance-navigation-timing";
-import { SiteTrackingPlugin } from "@snowplow/browser-plugin-site-tracking";
-
-export const useSnowplow = () => {
+/* export const useSnowplow = () => {
   const [tracker, setTracker] = useState<BrowserTracker>();
 
   useEffect(() => {
@@ -35,4 +31,15 @@ export const useSnowplow = () => {
   }, []);
 
   return tracker;
-}
+} */
+
+
+
+// Create an analytics hook that we can use with other components.
+export const useSnowplow = () => {
+  const result = React.useContext(AnalyticsContext);
+  if (!result) {
+    throw new Error("Context used outside of its Provider!");
+  }
+  return result;
+};

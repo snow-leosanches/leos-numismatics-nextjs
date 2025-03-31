@@ -1,22 +1,22 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect } from "react";
+import type { Metadata } from "next";
 
 import { Footer } from "@/components/footer";
-import { useSnowplow } from "@/hooks/useSnowplow";
+import Head from "next/head";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Leo's Numismatics",
+    description: "Collectible banknotes from all over the world",
+  };
+}
 
 export default function Home() {
-  const snowplowTracker = useSnowplow();
-  
-  useEffect(() => {
-    if (snowplowTracker) {
-      snowplowTracker.trackPageView();
-    }
-  }, [snowplowTracker]);
-
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)]">
+      <Head>
+        <title>Leo's Numismatics - Landing Page</title>
+      </Head>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           src="/images/logo-black.png"
