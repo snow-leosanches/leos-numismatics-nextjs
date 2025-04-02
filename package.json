@@ -6,19 +6,24 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "snowtype": "npx @snowplow/snowtype generate"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@snowplow/browser-plugin-performance-navigation-timing": "^4.4.0",
     "@snowplow/browser-plugin-site-tracking": "^4.4.0",
     "@snowplow/browser-plugin-snowplow-ecommerce": "^4.4.0",
     "@snowplow/browser-tracker": "^4.4.0",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.0",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@snowplow/snowtype": "^0.12.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
