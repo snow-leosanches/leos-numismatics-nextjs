@@ -1,5 +1,5 @@
 export class ProductEntity {
-    id: number;
+    id: string;
     name: string;
     description: string;
     price: number;
@@ -8,7 +8,7 @@ export class ProductEntity {
     quantity: number;
     
     constructor(
-        id: number,
+        id: string,
         name: string,
         description: string,
         price: number,

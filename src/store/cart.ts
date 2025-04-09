@@ -27,8 +27,14 @@ export class CartStore {
     }
   }
 
-  removeProduct(productId: number) {
-    this.products = this.products.filter((product) => product.id !== productId);
+  removeProduct(productId: string) {
+    const productIndex = this.products.findIndex((product) => product.id === productId);
+    if (productIndex !== -1) {
+      this.products[productIndex].quantity -= 1;
+      if (this.products[productIndex].quantity <= 0) {
+        this.products.splice(productIndex, 1);
+      }
+    }
   }
 
   // if data is provided set this data to BooksStore 

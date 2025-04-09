@@ -10,7 +10,7 @@ export interface BanknoteRowProps {
 }
 
 export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) => (
-  <div className="flex items-center gap-4">
+  <div className="flex items-center gap-4 pb-4">
     <div className="flex flex-col gap-2">
       <Image
         src={props.imageUrl}
