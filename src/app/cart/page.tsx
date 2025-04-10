@@ -1,20 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { useStore } from "@/store";
 import { ProductEntity } from "@/store/entities";
 
 import { BanknoteInCart } from "./banknote-in-cart";
 import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
-import Link from "next/link";
 
 export default function YourCart() {
-  const cartStore = useStore();
+  const store = useStore();
   const router = useRouter();
 
   const removeProduct = (productId: string, name: string, price: number, quantity: number) => {
-    cartStore.removeProduct(productId);
+    store.cart.removeProduct(productId);
     trackProductRemovedFromCartSpec({
       productId: productId,
       name: name,
@@ -30,9 +30,9 @@ export default function YourCart() {
         <h1 className="text-2xl">Your Cart</h1>
       </div>
 
-      {cartStore.products.length > 0 ? (
+      {store.cart.products.length > 0 ? (
         <div className="grid gap-4">
-          {cartStore.products.map((item: ProductEntity) => (
+          {store.cart.products.map((item: ProductEntity) => (
             <BanknoteInCart
               key={item.id}
               id={item.id}
@@ -45,7 +45,7 @@ export default function YourCart() {
           ))}
 
           <div className="flex justify-between items-center">
-            <p className="text-lg font-semibold">Total: ${cartStore.products.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
+            <p className="text-lg font-semibold">Total: ${store.cart.products.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
             <Link href="/checkout">
               <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
                 Checkout

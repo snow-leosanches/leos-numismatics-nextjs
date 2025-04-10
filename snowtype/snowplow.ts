@@ -155,67 +155,6 @@ export type CheckoutStarted = {
 }
 
 /**
- * product entity
- */
-export type EcommerceProduct1 = {
-    /**
-     * The brand of the product.
-     */
-    brand?: null | string;
-    /**
-     * The category the product belongs to. Use a consistent separator to express multiple
-     * levels. E.g. Woman/Shoes/Sneakers
-     */
-    category: string;
-    /**
-     * Identifier/Name/Url for the creative presented on a list or product view.
-     */
-    creative_id?: null | string;
-    /**
-     * The currency in which the product is being priced (ISO 4217).
-     */
-    currency: string;
-    /**
-     * The SKU or product ID.
-     */
-    id: string;
-    /**
-     * The inventory status of the product E.g. in stock, out of stock, preorder, backorder.
-     */
-    inventory_status?: null | string;
-    /**
-     * The list or recommended retail price of a product.
-     */
-    list_price?: number | null;
-    /**
-     * The name or title of the product.
-     */
-    name?: null | string;
-    /**
-     * The position the product was presented in a list of products E.g. search results, product
-     * list page.
-     */
-    position?: number | null;
-    /**
-     * The price of the product at the current time.
-     */
-    price: number;
-    /**
-     * The quantity of the product taking part in the ecommerce action.
-     */
-    quantity?: number | null;
-    /**
-     * The size of the product.
-     */
-    size?: null | string;
-    /**
-     * The variant of the product.
-     */
-    variant?: null | string;
-    [property: string]: any;
-}
-
-/**
  * Properties of a product removed from cart.
  */
 export type RemoveFromCart = {
@@ -369,33 +308,6 @@ export function createCheckoutStarted(checkoutStarted: CheckoutStarted){
     }
 }
 /**
- * Track a Snowplow event for EcommerceProduct1.
- * product entity
- */
-export function trackEcommerceProduct1<T extends {} = any>(ecommerceProduct1: EcommerceProduct1 & ContextsOrTimestamp<T>, trackers?: string[]){
-    const { context, timestamp, ...data } = ecommerceProduct1;
-    const event: SelfDescribingJson = {
-        schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/1-0-0',
-        data
-    };
-
-    trackSelfDescribingEvent({
-        event,
-        context,
-        timestamp,
-    }, trackers);
-}
-
-/**
- * Creates a Snowplow EcommerceProduct1 entity.
- */
-export function createEcommerceProduct1(ecommerceProduct1: EcommerceProduct1){
-    return {
-        schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/1-0-0',
-        data: ecommerceProduct1
-    }
-}
-/**
  * Track a Snowplow event for RemoveFromCart.
  * Properties of a product removed from cart.
  */
@@ -472,11 +384,10 @@ export function trackCheckoutCompletedSpec(checkoutCompleted: CheckoutCompleted 
     trackCheckoutCompleted<EcommerceProduct | EventSpecification>(modifiedCheckoutCompleted, trackers);
 }
 /**
- * @deprecated Outdated data structure detected.
  * Tracks a CheckoutStarted event specification.
  * ID: 8640a99c-5984-41b3-a5cb-91f8bb5efe90
  */
-export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & ContextsOrTimestamp<EcommerceProduct1>, trackers?: string[]){
+export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & ContextsOrTimestamp<EcommerceProduct>, trackers?: string[]){
     const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '8640a99c-5984-41b3-a5cb-91f8bb5efe90',
         name: 'Checkout Started',
@@ -494,7 +405,7 @@ export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & Cont
         context,
     };
 
-    trackCheckoutStarted<EcommerceProduct1 | EventSpecification>(modifiedCheckoutStarted, trackers);
+    trackCheckoutStarted<EcommerceProduct | EventSpecification>(modifiedCheckoutStarted, trackers);
 }
 /**
  * Tracks a ProductRemovedFromCart event specification.

@@ -37,7 +37,6 @@ export class CartStore {
     }
   }
 
-  // if data is provided set this data to BooksStore 
   hydrate = (data: CartEntity) => {
     if (!data) return;
     this.setProducts(data.products);
