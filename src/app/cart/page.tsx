@@ -7,6 +7,7 @@ import { ProductEntity } from "@/store/entities";
 
 import { BanknoteInCart } from "./banknote-in-cart";
 import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
+import Link from "next/link";
 
 export default function YourCart() {
   const cartStore = useStore();
@@ -42,6 +43,15 @@ export default function YourCart() {
               removeProduct={() => removeProduct(item.id, item.name, item.price, item.quantity)}
             />
           ))}
+
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold">Total: ${cartStore.products.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
+            <Link href="/checkout">
+              <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+                Checkout
+              </button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4">

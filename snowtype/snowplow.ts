@@ -24,6 +24,127 @@ export type AddToCart = {
 }
 
 /**
+ * The checkout confirmation event.
+ */
+export type CheckoutCompleted = {
+    /**
+     * The Billing City.
+     */
+    billing_city?: null | string;
+    /**
+     * The Billing Country.
+     */
+    billing_country?: null | string;
+    /**
+     * The Billing State.
+     */
+    billing_state?: null | string;
+    /**
+     * The coupon code used, if any.
+     */
+    coupon_code?: null | string;
+    /**
+     * The Shipping City.
+     */
+    shipping_city?: null | string;
+    /**
+     * The Shipping Country.
+     */
+    shipping_country?: null | string;
+    /**
+     * The Shipping State.
+     */
+    shipping_state?: null | string;
+    /**
+     * The checkout total.
+     */
+    total: number;
+}
+
+/**
+ * Product entity from Enhanced Ecommerce
+ */
+export type EcommerceProduct = {
+    /**
+     * Currency (ISO 4217) of the product price
+     */
+    currency?: string;
+    /**
+     * Discount applied to the product
+     */
+    discount?: number;
+    /**
+     * Position of the product in the list
+     */
+    index?: number;
+    /**
+     * All sizes available
+     */
+    item_all_sizes?: string;
+    /**
+     * Availability status of the item
+     */
+    item_availability?: string;
+    /**
+     * Currently available sizes
+     */
+    item_available_sizes?: string;
+    /**
+     * Proportion of available sizes (0–1)
+     */
+    item_available_sizes_share?: number;
+    /**
+     * Brand of the product
+     */
+    item_brand?: string;
+    /**
+     * Category ID of the product
+     */
+    item_category?: string;
+    /**
+     * The product ID
+     */
+    item_id?: string;
+    /**
+     * Comma-separated IDs of viewed images
+     */
+    item_image_view_ids?: string;
+    /**
+     * Number of images for the product
+     */
+    item_images_count?: number;
+    /**
+     * The list the item appeared in
+     */
+    item_list_name?: string;
+    /**
+     * Name of the product
+     */
+    item_name?: string;
+    /**
+     * Price type (e.g., regular, sale)
+     */
+    item_price_type?: string;
+    /**
+     * Size reserves
+     */
+    item_reserve?: string;
+    /**
+     * Variant ID of the product
+     */
+    item_variant?: string;
+    /**
+     * Price of the product
+     */
+    price?: number;
+    /**
+     * Quantity of the product
+     */
+    quantity?: number;
+    [property: string]: any;
+}
+
+/**
  * Checkout Started event, with cart data.
  */
 export type CheckoutStarted = {
@@ -36,7 +157,7 @@ export type CheckoutStarted = {
 /**
  * product entity
  */
-export type EcommerceProduct = {
+export type EcommerceProduct1 = {
     /**
      * The brand of the product.
      */
@@ -167,6 +288,60 @@ export function createAddToCart(addToCart: AddToCart){
     }
 }
 /**
+ * Track a Snowplow event for CheckoutCompleted.
+ * The checkout confirmation event.
+ */
+export function trackCheckoutCompleted<T extends {} = any>(checkoutCompleted: CheckoutCompleted & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = checkoutCompleted;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.leosnumismatics/checkout_completed/jsonschema/1-1-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow CheckoutCompleted entity.
+ */
+export function createCheckoutCompleted(checkoutCompleted: CheckoutCompleted){
+    return {
+        schema: 'iglu:com.leosnumismatics/checkout_completed/jsonschema/1-1-0',
+        data: checkoutCompleted
+    }
+}
+/**
+ * Track a Snowplow event for EcommerceProduct.
+ * Product entity from Enhanced Ecommerce
+ */
+export function trackEcommerceProduct<T extends {} = any>(ecommerceProduct: EcommerceProduct & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = ecommerceProduct;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/2-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow EcommerceProduct entity.
+ */
+export function createEcommerceProduct(ecommerceProduct: EcommerceProduct){
+    return {
+        schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/2-0-0',
+        data: ecommerceProduct
+    }
+}
+/**
  * Track a Snowplow event for CheckoutStarted.
  * Checkout Started event, with cart data.
  */
@@ -194,11 +369,11 @@ export function createCheckoutStarted(checkoutStarted: CheckoutStarted){
     }
 }
 /**
- * Track a Snowplow event for EcommerceProduct.
+ * Track a Snowplow event for EcommerceProduct1.
  * product entity
  */
-export function trackEcommerceProduct<T extends {} = any>(ecommerceProduct: EcommerceProduct & ContextsOrTimestamp<T>, trackers?: string[]){
-    const { context, timestamp, ...data } = ecommerceProduct;
+export function trackEcommerceProduct1<T extends {} = any>(ecommerceProduct1: EcommerceProduct1 & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = ecommerceProduct1;
     const event: SelfDescribingJson = {
         schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/1-0-0',
         data
@@ -212,12 +387,12 @@ export function trackEcommerceProduct<T extends {} = any>(ecommerceProduct: Ecom
 }
 
 /**
- * Creates a Snowplow EcommerceProduct entity.
+ * Creates a Snowplow EcommerceProduct1 entity.
  */
-export function createEcommerceProduct(ecommerceProduct: EcommerceProduct){
+export function createEcommerceProduct1(ecommerceProduct1: EcommerceProduct1){
     return {
         schema: 'iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/1-0-0',
-        data: ecommerceProduct
+        data: ecommerceProduct1
     }
 }
 /**
@@ -273,11 +448,35 @@ export function trackProductAddedToCartSpec(productAddedToCart: AddToCart & Cont
     trackAddToCart<Record<string, unknown> | EventSpecification>(modifiedProductAddedToCart, trackers);
 }
 /**
+ * Tracks a CheckoutCompleted event specification.
+ * ID: 2573385c-7d81-47d3-b827-15270f05bae8
+ */
+export function trackCheckoutCompletedSpec(checkoutCompleted: CheckoutCompleted & ContextsOrTimestamp<EcommerceProduct>, trackers?: string[]){
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+        id: '2573385c-7d81-47d3-b827-15270f05bae8',
+        name: 'Checkout Completed',
+        data_product_id: 'eb003f2a-9b7b-46cf-ad7b-b8f2ee52bef9',
+        data_product_name: 'Leo&#x27;s Numismatics Data Product',
+        data_product_domain: 'Sales'
+    });
+
+    const context = Array.isArray(checkoutCompleted.context)
+        ? [...checkoutCompleted.context, eventSpecificationContext]
+        : [eventSpecificationContext];
+
+    const modifiedCheckoutCompleted = {
+        ...checkoutCompleted,
+        context,
+    };
+
+    trackCheckoutCompleted<EcommerceProduct | EventSpecification>(modifiedCheckoutCompleted, trackers);
+}
+/**
  * @deprecated Outdated data structure detected.
  * Tracks a CheckoutStarted event specification.
  * ID: 8640a99c-5984-41b3-a5cb-91f8bb5efe90
  */
-export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & ContextsOrTimestamp<EcommerceProduct>, trackers?: string[]){
+export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & ContextsOrTimestamp<EcommerceProduct1>, trackers?: string[]){
     const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '8640a99c-5984-41b3-a5cb-91f8bb5efe90',
         name: 'Checkout Started',
@@ -295,7 +494,7 @@ export function trackCheckoutStartedSpec(checkoutStarted: CheckoutStarted & Cont
         context,
     };
 
-    trackCheckoutStarted<EcommerceProduct | EventSpecification>(modifiedCheckoutStarted, trackers);
+    trackCheckoutStarted<EcommerceProduct1 | EventSpecification>(modifiedCheckoutStarted, trackers);
 }
 /**
  * Tracks a ProductRemovedFromCart event specification.

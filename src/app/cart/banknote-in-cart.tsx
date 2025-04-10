@@ -4,7 +4,7 @@ export interface BanknoteInCartProps {
   name: string;
   price: number;
   quantity: number;
-  removeProduct: (productId: string) => void;
+  removeProduct: (productId: string, name: string, price: number, quantity: number) => void;
 }
 
 export const BanknoteInCart: React.FC<BanknoteInCartProps> = ({ id, imageUrl, name, price, quantity, removeProduct }) => {
@@ -24,7 +24,7 @@ export const BanknoteInCart: React.FC<BanknoteInCartProps> = ({ id, imageUrl, na
         <p className="text-sm text-gray-500">Quantity: {quantity}</p>
       </div>
       <div className="flex gap-2">
-        <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto" onClick={() => removeProduct(id)}>
+        <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto" onClick={() => removeProduct(id, name, price, quantity)}>
           Remove
         </button>
       </div>
