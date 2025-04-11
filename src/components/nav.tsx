@@ -1,7 +1,26 @@
 import Link from "next/link";
 
-export const Nav: React.FunctionComponent = () => (
-  <nav className="bg-white border-gray-200 dark:bg-gray-900">
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
+
+const LoginOrLogoutComponent = () => {
+  const store = useStore();
+
+  if (store.user.email) {
+    return (
+      <Link href="/account" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+        {store.user.email}
+      </Link>
+    );
+  }
+
+  return <Link href="/login" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Login</Link>
+}
+
+const LoginOrLogout = observer(LoginOrLogoutComponent);
+
+const NavComponent: React.FunctionComponent = () => {
+  return <nav className="bg-white border-gray-200 dark:bg-gray-900">
     <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="/images/icon.png" className="h-8" alt="Leo's Numismatics" />
@@ -25,7 +44,7 @@ export const Nav: React.FunctionComponent = () => (
             <Link href="/cart" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
           </li>
           <li>
-            <Link href="/login" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Login</Link>
+            <LoginOrLogout />
           </li>
           <li>
             <a href="#" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
@@ -34,4 +53,6 @@ export const Nav: React.FunctionComponent = () => (
       </div>
     </div>
   </nav>
-)
+}
+
+export const Nav = observer(NavComponent);

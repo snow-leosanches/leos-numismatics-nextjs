@@ -7,9 +7,9 @@ export class UserStore {
   email: string;
 
   constructor() {
-    this.userId = faker.string.alphanumeric(16);
-    this.name = faker.person.fullName();
-    this.email = faker.internet.email();
+    this.userId = "";
+    this.name = "";
+    this.email = "";
     makeAutoObservable(this);
   }
 
@@ -23,6 +23,12 @@ export class UserStore {
 
   setEmail(email: string) {
     this.email = email;
+  }
+
+  logout() {
+    this.userId = "";
+    this.name = "";
+    this.email = "";
   }
 
   hydrate = (data: { userId: string; name: string; email: string }) => {

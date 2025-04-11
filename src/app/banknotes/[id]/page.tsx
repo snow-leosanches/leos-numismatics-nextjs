@@ -14,7 +14,7 @@ export interface BanknoteDetailsProps {
 
 const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const cartStore = useStore();
+  const store = useStore();
 
   const selectedBanknote = banknotes.find((banknote) => banknote.id === id);
   if (!selectedBanknote) {
@@ -22,7 +22,7 @@ const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   const addToCart = () => {
-    cartStore.addProduct({
+    store.cart.addProduct({
       id: selectedBanknote.id,
       name: selectedBanknote.title,
       price: selectedBanknote.price,
@@ -35,6 +35,8 @@ const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
     trackProductAddedToCartSpec({
       productId: selectedBanknote.id,
       name: selectedBanknote.title,
+      price: selectedBanknote.price,
+      quantity: 1
     });
     
     alert(`${selectedBanknote.title} has been added to your cart.`);

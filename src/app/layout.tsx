@@ -8,6 +8,7 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { PageTracker } from '@/components/page-tracker';
 import { CartStore, useStore } from '@/store';
+import { UserStore } from '@/store/user';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const MobxContext = createContext<CartStore>(undefined!);
+export const MobxContext = createContext<{ cart: CartStore, user: UserStore }>(undefined!);
 
 export default function RootLayout({
   children,
@@ -34,8 +35,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Nav />
         <MobxContext.Provider value={store}>
+          <Nav />
           {children}
         </MobxContext.Provider>
       </body>

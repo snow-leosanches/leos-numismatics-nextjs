@@ -1,9 +1,10 @@
-import { PageTracker } from '@/components/page-tracker';
 import { Metadata } from 'next';
+
+import { PageTracker } from '@/components/page-tracker';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Leo's Numismatics - Our Banknotes",
+    title: "Leo's Numismatics - My Cart",
     description: "Collectible banknotes from all over the world",
   };
 }

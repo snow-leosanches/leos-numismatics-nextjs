@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Leo's Numismatics - Login",
+    title: "Leo's Numismatics - My Account",
     description: "Collectible banknotes from all over the world",
   };
 }
