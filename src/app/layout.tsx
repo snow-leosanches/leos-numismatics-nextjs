@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const MobxContext = createContext<{ cart: CartStore, user: UserStore }>(undefined!);
+const MobxContext = createContext<{ cart: CartStore, user: UserStore }>(undefined!);
 
 export default function RootLayout({
   children,
