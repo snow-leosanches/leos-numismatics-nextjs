@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
+import { snowplowTracker } from "../../components/snowplow-tracker";
 
 const Login = () => {
   const store = useStore();
@@ -16,7 +17,8 @@ const Login = () => {
     store.user.setName(faker.person.fullName());
     store.user.setEmail(email);
 
-    console.log('store.user', store.user);
+    snowplowTracker?.setUserId(email);
+
     router.push("/");
   }
 
