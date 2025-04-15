@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
+import { snowplowTracker } from "../../components/snowplow-tracker";
 
 const Account = () => {
   const store = useStore();
@@ -28,6 +29,13 @@ const Account = () => {
     const email = faker.internet.email();
     store.user.setEmail(email);
     store.user.setUserId(email);
+
+    if (snowplowTracker) {
+      snowplowTracker.setUserId(email);
+    } else {
+      console.warn("Snowplow tracker is not defined");
+    }
+    
     router.refresh();
   }
 

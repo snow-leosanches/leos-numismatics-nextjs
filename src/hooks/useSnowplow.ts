@@ -1,6 +1,8 @@
 import React from 'react';
 import { AnalyticsContext } from '@/contexts';
 
+import { snowplowTracker } from "../components/snowplow-tracker";
+
 /* export const useSnowplow = () => {
   const [tracker, setTracker] = useState<BrowserTracker>();
 
@@ -36,10 +38,17 @@ import { AnalyticsContext } from '@/contexts';
 
 
 // Create an analytics hook that we can use with other components.
-export const useSnowplow = () => {
+/* export const useSnowplow = () => {
   const result = React.useContext(AnalyticsContext);
   if (!result) {
     throw new Error("Context used outside of its Provider!");
   }
   return result;
-};
+}; */
+
+export const useSnowplow = () => {
+  if (!snowplowTracker) {
+    console.warn("Snowplow tracker is not defined");
+  }
+  return snowplowTracker;
+}

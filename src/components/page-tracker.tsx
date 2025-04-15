@@ -8,7 +8,11 @@ export function PageTracker() {
   // const router = useRouter();
 
   useEffect(() => {
-    snowplowTracker?.trackPageView();
+    if (snowplowTracker) {
+      snowplowTracker.trackPageView();
+    } else {
+      console.warn("Snowplow tracker is not defined");
+    }
 
     /* router.events.on("routeChangeComplete", () => {
       snowplowTracker?.trackPageView();
