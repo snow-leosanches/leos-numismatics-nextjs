@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { faker } from '@faker-js/faker';
 
 import { useStore } from "@/store";
-import { trackCheckoutCompletedSpec, trackCheckoutStartedSpec } from "../../../snowtype/snowplow";
+import { trackCheckoutCompletedSpec } from "../../../snowtype/snowplow";
 import { ShippingInformation } from "./shipping-information";
 import { PaymentInformation } from "./payment-information";
+import { CheckoutTitle } from "./checkout-title";
 
 export default function Checkout() {
   const store = useStore();
@@ -68,29 +68,9 @@ export default function Checkout() {
     );
   }
 
-  useEffect(() => {
-    trackCheckoutStartedSpec({
-      cart_id: faker.string.alpha(16),
-      timestamp: new Date().getTime(),
-      context: store.cart.products.map((item) => ({
-        schema: "iglu:com.snplow.sales.aws/ecommerce_product/jsonschema/2-0-0",
-        data: {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          currency: item.currency,
-          category: "banknotes",
-        }
-      }))
-    });
-  }, []);
-
   return (
     <main className="container grid justify-center pt-8">
-      <div className="col gap-4 pb-8">
-        <h1 className="text-2xl">Checkout</h1>
-      </div>
+      <CheckoutTitle />
 
       <div className="grid gap-4">
         <h1 className="text-xl">Order Summary</h1>
