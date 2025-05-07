@@ -13,24 +13,24 @@ export default function Checkout() {
   const store = useStore();
   const router = useRouter();
 
-  const [customerName, setCustomerName] = useState("");
-  const [customerAddress, setCustomerAddress] = useState("");
-  const [customerCity, setCustomerCity] = useState("");
-  const [customerState, setCustomerState] = useState("");
-  const [customerZipCode, setCustomerZipCode] = useState("");
-  const [customerCountry, setCustomerCountry] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expirationDate, setExpirationDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [billingAddress, setBillingAddress] = useState("");
-  const [billingCity, setBillingCity] = useState("");
-  const [billingState, setBillingState] = useState("");
-  const [billingZipCode, setBillingZipCode] = useState("");
-  const [billingCountry, setBillingCountry] = useState("");
+  const [customerName, setCustomerName] = useState("123");
+  const [customerAddress, setCustomerAddress] = useState("123");
+  const [customerCity, setCustomerCity] = useState("123");
+  const [customerState, setCustomerState] = useState("123");
+  const [customerZipCode, setCustomerZipCode] = useState("123");
+  const [customerCountry, setCustomerCountry] = useState("123");
+  const [cardNumber, setCardNumber] = useState("123");
+  const [expirationDate, setExpirationDate] = useState("123");
+  const [cvv, setCvv] = useState("123");
+  const [billingAddress, setBillingAddress] = useState("123");
+  const [billingCity, setBillingCity] = useState("123");
+  const [billingState, setBillingState] = useState("123");
+  const [billingZipCode, setBillingZipCode] = useState("123");
+  const [billingCountry, setBillingCountry] = useState("123");
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [shippingMethod, setShippingMethod] = useState("standard");
-  const [orderNotes, setOrderNotes] = useState("");
+  const [orderNotes, setOrderNotes] = useState("123");
 
   const completePurchase = () => {
     trackCheckoutCompletedSpec({
@@ -93,25 +93,42 @@ export default function Checkout() {
         </div>
 
         <ShippingInformation
+          customerName={customerName}
           setCustomerName={setCustomerName}
+          customerAddress={customerAddress}
           setCustomerAddress={setCustomerAddress}
+          customerCity={customerCity}
           setCustomerCity={setCustomerCity}
+          customerState={customerState}
           setCustomerState={setCustomerState}
+          customerZipCode={customerZipCode}
           setCustomerZipCode={setCustomerZipCode}
+          customerCountry={customerCountry}
           setCustomerCountry={setCustomerCountry}
         />
 
         <PaymentInformation
+          paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
+          shippingMethod={shippingMethod}
           setShippingMethod={setShippingMethod}
+          cardNumber={cardNumber}
           setCardNumber={setCardNumber}
+          expirationDate={expirationDate}
           setExpirationDate={setExpirationDate}
+          cvv={cvv}
           setCvv={setCvv}
+          billingAddress={billingAddress}
           setBillingAddress={setBillingAddress}
+          billingCity={billingCity}
           setBillingCity={setBillingCity}
+          billingState={billingState}
           setBillingState={setBillingState}
+          billingZipCode={billingZipCode}
           setBillingZipCode={setBillingZipCode}
+          billingCountry={billingCountry}
           setBillingCountry={setBillingCountry}
+          billingSameAsShipping={billingSameAsShipping}
           setBillingSameAsShipping={setBillingSameAsShipping}
         />
 
