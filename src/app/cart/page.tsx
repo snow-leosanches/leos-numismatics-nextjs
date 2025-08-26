@@ -7,7 +7,8 @@ import { useStore } from "@/store";
 import { ProductEntity } from "@/store/entities";
 
 import { BanknoteInCart } from "./banknote-in-cart";
-import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
+// import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
+import { trackRemoveFromCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
 export default function YourCart() {
   const store = useStore();
@@ -15,12 +16,27 @@ export default function YourCart() {
 
   const removeProduct = (productId: string, name: string, price: number, quantity: number) => {
     store.cart.removeProduct(productId);
-    trackProductRemovedFromCartSpec({
+    // Track using "Remove from Cart" event from the Snowplow Ecommerce Plugin
+    trackRemoveFromCart({
+      cart_id: store.cart.cartId,
+      currency: 'USD',
+      total_value: store.cart.total,
+      products: [{
+        id: productId,
+        name: name,
+        price: price,
+        quantity: 1,
+        currency: 'USD',
+        category: 'Banknotes'
+      }],
+    });
+    // Track using events defined in the Data Product
+    /* trackProductRemovedFromCartSpec({
       productId: productId,
       name: name,
       price: price,
       quantity: quantity,
-    });
+    }); */
     router.refresh();
   }
 

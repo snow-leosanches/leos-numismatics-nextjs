@@ -14,6 +14,10 @@ export class CartStore {
     makeAutoObservable(this);
   }
 
+  get total() {
+    return this.products.reduce((sum, product) => sum + product.price * product.quantity, 0);
+  }
+
   setProducts(products: ProductEntity[]) {
     this.products = products;
   }

@@ -16,6 +16,11 @@ const Login = () => {
     store.user.setUserId(email);
     store.user.setName(faker.person.fullName());
     store.user.setEmail(email);
+    store.user.setAddress(faker.location.streetAddress());
+    store.user.setCity(faker.location.city());
+    store.user.setState(faker.location.state());
+    store.user.setZipCode(faker.location.zipCode());
+    store.user.setCountry(faker.location.country());
 
     snowplowTracker?.setUserId(email);
 

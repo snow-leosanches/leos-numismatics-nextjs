@@ -1,11 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import Image from "next/image";
 import { observer } from "mobx-react-lite";
 
 import { banknotes } from "../catalog";
-import { trackProductAddedToCartSpec } from "../../../../snowtype/snowplow";
+// import { trackProductAddedToCartSpec } from "../../../../snowtype/snowplow";
+import { trackAddToCart, trackProductView } from "@snowplow/browser-plugin-snowplow-ecommerce";
 import { useStore } from "@/store";
 
 export interface BanknoteDetailsProps {
@@ -21,6 +22,16 @@ const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
     return <div>Banknote not found</div>;
   }
 
+  useEffect(() => {
+    trackProductView({
+      id: selectedBanknote.id,
+      name: selectedBanknote.title,
+      price: selectedBanknote.price,
+      currency: 'USD',
+      category: 'Banknotes'
+    });
+  }, [selectedBanknote]);
+
   const addToCart = () => {
     store.cart.addProduct({
       id: selectedBanknote.id,
@@ -32,12 +43,29 @@ const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
       currency: 'USD'
     });
 
-    trackProductAddedToCartSpec({
+    // Track using "Add to Cart" event from the Snowplow Ecommerce Plugin
+    trackAddToCart({
+      cart_id: store.cart.cartId,
+      currency: 'USD',
+      total_value: store.cart.total,
+      products: [{
+        id: selectedBanknote.id,
+        name: selectedBanknote.title,
+        price: selectedBanknote.price,
+        quantity: 1,
+        currency: 'USD',
+        category: 'Banknotes'
+      }],
+      
+    });
+
+    // Track using events defined in the Data Product
+    /* trackProductAddedToCartSpec({
       productId: selectedBanknote.id,
       name: selectedBanknote.title,
       price: selectedBanknote.price,
       quantity: 1
-    });
+    }); */
     
     alert(`${selectedBanknote.title} has been added to your cart.`);
   }

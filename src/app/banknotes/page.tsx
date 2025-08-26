@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { trackPageView } from "@snowplow/browser-tracker";
+import { trackProductListView } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
 // import { useSnowplow } from "@/hooks/useSnowplow";
 import { BanknoteRow } from "./banknote-row";
@@ -18,6 +19,16 @@ export default function Banknotes() {
   // Approach 2: using `trackPageView` directly.
   useEffect(() => {
     trackPageView();
+    trackProductListView({
+      name: 'Banknotes Index',
+      products: banknotes.map((banknote) => ({
+        id: banknote.id,
+        name: banknote.title,
+        price: banknote.price,
+        currency: 'USD',
+        category: 'Banknotes'
+      }))
+    });
   }, []);
 
   return <main className="container grid justify-center pt-8 px-4">
