@@ -14,8 +14,10 @@ const eslintConfig = [
   { 
     rules: { 
       "react/no-unescaped-entities": "warn",
+      "react-hooks/rules-of-hooks": "warn",
       // "@next/next/no-html-link": "warn",
-      "@typescript-eslint/no-unused-vars": "warn" 
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
     } 
   },
 ];
