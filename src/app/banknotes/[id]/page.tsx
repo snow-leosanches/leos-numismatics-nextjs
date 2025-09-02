@@ -55,8 +55,7 @@ const BanknoteDetails = ({ params }: { params: Promise<{ id: string }> }) => {
         quantity: 1,
         currency: 'USD',
         category: 'Banknotes'
-      }],
-      
+      }]
     });
 
     // Track using events defined in the Data Product

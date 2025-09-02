@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { makePersistable } from 'mobx-persist-store';
 import { faker } from "@faker-js/faker";
 
 export class UserStore {
@@ -21,6 +22,23 @@ export class UserStore {
     this.zipCode = "";
     this.country = "";
     makeAutoObservable(this);
+
+    // Only initialize persistence on the client side
+    if (typeof window !== 'undefined') {
+      makePersistable(
+        this,
+        {
+          name: 'UserStore',
+          properties: ['userId', 'name', 'email', 'address', 'city', 'state', 'zipCode', 'country'],
+          expireIn: 86400000 * 7, // Seven days in milliseconds
+          removeOnExpiration: true,
+          stringify: false,
+          debugMode: false,
+          storage: window.localStorage
+        },
+        { delay: 1000, fireImmediately: false },
+      );
+    }
   }
 
   setUserId(userId: string) {

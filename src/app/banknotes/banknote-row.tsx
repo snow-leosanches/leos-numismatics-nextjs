@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { trackAddToCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
+
+import { useStore } from "@/store";
+
 export interface BanknoteRowProps {
   id: string;
   imageUrl: string;
@@ -9,8 +13,47 @@ export interface BanknoteRowProps {
   price: number;
 }
 
-export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) => (
-  <div className="flex items-center gap-4 pb-4">
+export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) => {
+  const store = useStore();
+
+  const addToCart = () => {
+    store.cart.addProduct({
+      id: props.id,
+      name: props.title,
+      price: props.price,
+      quantity: 1,
+      imageUrl: props.imageUrl,
+      description: props.description,
+      currency: 'USD'
+    });
+
+    // Track using "Add to Cart" event from the Snowplow Ecommerce Plugin
+    trackAddToCart({
+      cart_id: store.cart.cartId,
+      currency: 'USD',
+      total_value: store.cart.total,
+      products: [{
+        id: props.id,
+        name: props.title,
+        price: props.price,
+        quantity: 1,
+        currency: 'USD',
+        category: 'Banknotes'
+      }]
+    });
+
+    // Track using events defined in the Data Product
+    /* trackProductAddedToCartSpec({
+      productId: selectedBanknote.id,
+      name: selectedBanknote.title,
+      price: selectedBanknote.price,
+      quantity: 1
+    }); */
+    
+    alert(`${props.title} has been added to your cart.`);
+  }
+
+  return <div className="flex items-center gap-4 pb-4">
     <div className="flex flex-col gap-2">
       <Image
         src={props.imageUrl}
@@ -27,10 +70,12 @@ export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) =>
         <Link href={`/banknotes/${props.id}`} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
           View Details
         </Link>
-        <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+        <button 
+          onClick={addToCart}
+          className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
           Add to Cart
         </button>
       </div>
     </div>
   </div>
-)
+}

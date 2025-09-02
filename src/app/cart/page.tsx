@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
 import { ProductEntity } from "@/store/entities";
@@ -10,7 +11,7 @@ import { BanknoteInCart } from "./banknote-in-cart";
 // import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
 import { trackRemoveFromCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
-export default function YourCart() {
+const YourCart = () => {
   const store = useStore();
   const router = useRouter();
 
@@ -78,3 +79,5 @@ export default function YourCart() {
     </main>
   );
 }
+
+export default observer(YourCart);

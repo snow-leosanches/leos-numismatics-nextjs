@@ -1,11 +1,14 @@
+import { makeAutoObservable } from "mobx";
+
 import { ProductEntity } from "./product";
 
 export class CartEntity {
-    products: ProductEntity[];
-    currency: string;
+  products: ProductEntity[];
+  currency: string;
 
-    constructor(products: ProductEntity[], currency: string) {
-        this.products = products;
-        this.currency = currency;
-    }
+  constructor(products: ProductEntity[], currency: string) {
+    this.products = products;
+    this.currency = currency;
+    makeAutoObservable(this);
+  }
 }

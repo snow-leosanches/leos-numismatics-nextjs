@@ -2,6 +2,7 @@ export * from './cart';
 
 // we need to enable static rendering for prevent rerender on server side and leaking memory
 import { enableStaticRendering } from "mobx-react-lite";
+import { useState, useEffect } from 'react';
 import { CartStore } from './cart';
 import { CartEntity } from './entities/cart';
 import { UserStore } from './user';
@@ -33,7 +34,27 @@ const initStore = (initData?: CartEntity) => {
   return store;
 }
 
-// Hook for using store
+// Hook for using store - Fixed version
 export function useStore(initData?: CartEntity) {
-  return initStore(initData)
+  const [store, setStore] = useState(() => {
+    // Only initialize on server or first client render
+    if (typeof window === "undefined") {
+      return initStore(initData);
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    // Initialize store on client after component mounts
+    if (typeof window !== "undefined" && !store) {
+      const clientStore = initStore(initData);
+      setStore(clientStore);
+    }
+  }, [initData, store]);
+
+  // Return the initialized store, or a fallback for SSR
+  return store || { 
+    cart: new CartStore(), 
+    user: new UserStore() 
+  };
 }

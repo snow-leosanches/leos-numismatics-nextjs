@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { observer } from "mobx-react-lite";
+
 import { trackPageView } from "@snowplow/browser-tracker";
 import { trackProductListView } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
@@ -8,7 +10,7 @@ import { trackProductListView } from "@snowplow/browser-plugin-snowplow-ecommerc
 import { BanknoteRow } from "./banknote-row";
 import { Banknote, banknotes } from "./catalog";
 
-export default function Banknotes() {
+const Banknotes = () => {
   // Apprach 1: using hooks.
   /* const snowplowTracker = useSnowplow();
 
@@ -50,3 +52,5 @@ export default function Banknotes() {
     </div>
   </main>
 }
+
+export default observer(Banknotes);
