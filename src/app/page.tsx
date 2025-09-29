@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 
 import { Footer } from "@/components/footer";
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Leo's Numismatics",
