@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
+import { useBuildHref } from "@/hooks/useBuildHref";
 
 const LoginOrLogoutComponent = () => {
   const store = useStore();
@@ -20,6 +21,8 @@ const LoginOrLogoutComponent = () => {
 const LoginOrLogout = observer(LoginOrLogoutComponent);
 
 const NavComponent: React.FunctionComponent = () => {
+  const { buildHref } = useBuildHref();
+  
   return <nav className="bg-white border-gray-200 dark:bg-gray-900">
     <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -38,10 +41,10 @@ const NavComponent: React.FunctionComponent = () => {
             <Link href="/" className="block py-2 px-3 text-white bg-orange-300 rounded-sm md:bg-transparent md:text-orange-300 md:p-0 dark:text-white md:dark:text-orange-200" aria-current="page">Home</Link>
           </li>
           <li>
-            <Link href="/banknotes" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
+            <Link href={buildHref("/banknotes")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
           </li>
           <li>
-            <Link href="/cart" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
+            <Link href={buildHref("/cart")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
           </li>
           <li>
             <LoginOrLogout />
