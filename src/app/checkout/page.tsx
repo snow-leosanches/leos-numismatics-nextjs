@@ -12,13 +12,14 @@ import { ShippingInformation } from "./shipping-information";
 import { PaymentInformation } from "./payment-information";
 import { CheckoutTitle } from "./checkout-title";
 import { snowplowTracker } from "@/components/snowplow-tracker";
+import { trackCustomerIdentificationSpec } from "../../../snowtype/snowplow";
 
 const Checkout = () => {
   const store = useStore();
   const router = useRouter();
 
-  const [customerName, setCustomerName] = useState(store.user.name || "123");
-  const [customerAddress, setCustomerAddress] = useState(store.user.address || "123");
+  const [customerName, setCustomerName] = useState(faker.person.fullName());
+  const [customerAddress, setCustomerAddress] = useState(faker.location.streetAddress());
   const [customerCity, setCustomerCity] = useState(store.user.city || "123");
   const [customerState, setCustomerState] = useState(store.user.state || "123");
   const [customerZipCode, setCustomerZipCode] = useState(store.user.zipCode || "123");
@@ -27,28 +28,32 @@ const Checkout = () => {
   const [expirationDate, setExpirationDate] = useState("123");
   const [cvv, setCvv] = useState("123");
   const [billingAddress, setBillingAddress] = useState("123");
-  const [billingCity, setBillingCity] = useState("123");
-  const [billingState, setBillingState] = useState("123");
-  const [billingZipCode, setBillingZipCode] = useState("123");
-  const [billingCountry, setBillingCountry] = useState("123");
+  const [billingCity, setBillingCity] = useState(faker.location.city());
+  const [billingState, setBillingState] = useState(faker.location.state());
+  const [billingZipCode, setBillingZipCode] = useState(faker.location.zipCode());
+  const [billingCountry, setBillingCountry] = useState('USA');
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [shippingMethod, setShippingMethod] = useState("standard");
-  const [orderNotes, setOrderNotes] = useState("123");
 
   useEffect(() => {
     if (!store.user.userId) {
       const email = faker.internet.email();
       store.user.setUserId(email);
-      store.user.setName(faker.person.fullName());
+      store.user.setName(customerName);
       store.user.setEmail(email);
-      store.user.setAddress(faker.location.streetAddress());
-      store.user.setCity(faker.location.city());
-      store.user.setState(faker.location.state());
-      store.user.setZipCode(faker.location.zipCode());
-      store.user.setCountry(faker.location.country());
+      store.user.setAddress(customerAddress);
+      store.user.setCity(billingCity);
+      store.user.setState(billingState);
+      store.user.setZipCode(billingZipCode);
+      store.user.setCountry(billingCountry);
 
       snowplowTracker?.setUserId(email);
+
+      trackCustomerIdentificationSpec({
+        email: email,
+        phone: faker.phone.number()
+      });
     }
   }, [store.user]);
 

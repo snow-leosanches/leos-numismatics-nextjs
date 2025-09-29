@@ -17,6 +17,30 @@ type TransactionError = any;
 type CheckoutStep = any;
 
 /**
+ * Structure for events that identify a user, with their user pieces
+ */
+export type CustomerIdentification = {
+    /**
+     * Customer's email address
+     */
+    email?: null | string;
+    /**
+     * The customer's phone
+     */
+    phone?: null | string;
+}
+
+/**
+ * Event structure for a User Update Profile operation.
+ */
+export type UpdateUserProfile = {
+    /**
+     * The User ID
+     */
+    user_id: string;
+}
+
+/**
  * Generated from a property rule
  */
 export type SnowplowEcommerceActionInternalPromotionView = {
@@ -151,6 +175,60 @@ interface EventSpecification {
 }
 
 type ContextsOrTimestamp<T = any> = Omit<CommonEventProperties<T>, 'context'> & { context?: SelfDescribingJson<T>[] | null | undefined }
+/**
+ * Track a Snowplow event for CustomerIdentification.
+ * Structure for events that identify a user, with their user pieces
+ */
+export function trackCustomerIdentification<T extends {} = any>(customerIdentification: CustomerIdentification & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = customerIdentification;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow CustomerIdentification entity.
+ */
+export function createCustomerIdentification(customerIdentification: CustomerIdentification){
+    return {
+        schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
+        data: customerIdentification
+    }
+}
+/**
+ * Track a Snowplow event for UpdateUserProfile.
+ * Event structure for a User Update Profile operation.
+ */
+export function trackUpdateUserProfile<T extends {} = any>(updateUserProfile: UpdateUserProfile & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = updateUserProfile;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.homestory/update_user_profile/jsonschema/1-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow UpdateUserProfile entity.
+ */
+export function createUpdateUserProfile(updateUserProfile: UpdateUserProfile){
+    return {
+        schema: 'iglu:com.homestory/update_user_profile/jsonschema/1-0-0',
+        data: updateUserProfile
+    }
+}
 /**
  * Track a Snowplow event for SnowplowEcommerceActionInternalPromotionView.
  * Generated from a property rule
@@ -350,6 +428,54 @@ function trackSnowplowEcommerceActionTrackProductView<T extends {} = any>(snowpl
 }
 
 
+/**
+ * Tracks a CustomerIdentification event specification.
+ * ID: 75178748-ae15-4828-b9f4-b49ee638a841
+ */
+export function trackCustomerIdentificationSpec(customerIdentification: CustomerIdentification & ContextsOrTimestamp, trackers?: string[]){
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+        id: '75178748-ae15-4828-b9f4-b49ee638a841',
+        name: 'Customer Identification',
+        data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
+        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_domain: 'E-commerce'
+    });
+
+    const context = Array.isArray(customerIdentification.context)
+        ? [...customerIdentification.context, eventSpecificationContext]
+        : [eventSpecificationContext];
+
+    const modifiedCustomerIdentification = {
+        ...customerIdentification,
+        context,
+    };
+
+    trackCustomerIdentification<Record<string, unknown> | EventSpecification>(modifiedCustomerIdentification, trackers);
+}
+/**
+ * Tracks a UpdateProfile event specification.
+ * ID: fbe39734-dbab-4170-8722-878fd0973c29
+ */
+export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & ContextsOrTimestamp, trackers?: string[]){
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+        id: 'fbe39734-dbab-4170-8722-878fd0973c29',
+        name: 'Update Profile',
+        data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
+        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_domain: 'E-commerce'
+    });
+
+    const context = Array.isArray(updateProfile.context)
+        ? [...updateProfile.context, eventSpecificationContext]
+        : [eventSpecificationContext];
+
+    const modifiedUpdateProfile = {
+        ...updateProfile,
+        context,
+    };
+
+    trackUpdateUserProfile<Record<string, unknown> | EventSpecification>(modifiedUpdateProfile, trackers);
+}
 
 /**
  * Tracks a InternalPromotionView event specification.

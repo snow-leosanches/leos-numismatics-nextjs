@@ -15,6 +15,7 @@
     "@snowplow/browser-plugin-site-tracking": "^4.4.0",
     "@snowplow/browser-plugin-snowplow-ecommerce": "^4.4.0",
     "@snowplow/browser-tracker": "^4.4.0",
+    "commander": "11.1.x",
     "mobx": "^6.13.7",
     "mobx-persist-store": "^1.1.8",
     "mobx-react-lite": "^4.1.0",
