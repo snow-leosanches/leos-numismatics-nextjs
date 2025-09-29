@@ -10,6 +10,8 @@ import { trackProductListView } from "@snowplow/browser-plugin-snowplow-ecommerc
 import { BanknoteRow } from "./banknote-row";
 import { Banknote, banknotes } from "./catalog";
 
+export const dynamic = 'force-dynamic';
+
 const Banknotes = () => {
   // Apprach 1: using hooks.
   /* const snowplowTracker = useSnowplow();

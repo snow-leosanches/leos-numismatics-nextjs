@@ -11,6 +11,8 @@ import { BanknoteInCart } from "./banknote-in-cart";
 // import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
 import { trackRemoveFromCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
+export const dynamic = 'force-dynamic';
+
 const YourCart = () => {
   const store = useStore();
   const router = useRouter();

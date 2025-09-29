@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 export default function ThankYou() {
   return (
     <main className="container grid justify-center pt-8">

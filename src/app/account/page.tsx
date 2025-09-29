@@ -7,6 +7,8 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "@/store";
 import { snowplowTracker } from "../../components/snowplow-tracker";
 
+export const dynamic = 'force-dynamic';
+
 const Account = () => {
   const store = useStore();
   const router = useRouter();
