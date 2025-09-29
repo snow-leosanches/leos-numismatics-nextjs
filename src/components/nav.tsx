@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from "next/link";
 
 import { useStore } from "@/store";
@@ -41,10 +42,14 @@ const NavComponent: React.FunctionComponent = () => {
             <Link href="/" className="block py-2 px-3 text-white bg-orange-300 rounded-sm md:bg-transparent md:text-orange-300 md:p-0 dark:text-white md:dark:text-orange-200" aria-current="page">Home</Link>
           </li>
           <li>
-            <Link href={buildHref("/banknotes")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
+            <Suspense fallback={<Link href="/banknotes" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>}>
+              <Link href={buildHref("/banknotes")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
+            </Suspense>
           </li>
           <li>
-            <Link href={buildHref("/cart")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
+            <Suspense fallback={<Link href="/cart" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>}>
+              <Link href={buildHref("/cart")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
+            </Suspense>
           </li>
           <li>
             <LoginOrLogout />
