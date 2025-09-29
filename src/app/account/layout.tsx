@@ -1,6 +1,8 @@
 import { PageTracker } from '@/components/page-tracker';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Leo's Numismatics - My Account",

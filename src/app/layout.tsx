@@ -10,6 +10,8 @@ import { PageTracker } from '@/components/page-tracker';
 import { CartStore, useStore } from '@/store';
 import { UserStore } from '@/store/user';
 
+export const dynamic = 'force-dynamic';
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
