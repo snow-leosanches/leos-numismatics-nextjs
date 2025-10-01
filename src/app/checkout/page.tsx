@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
 import { observer } from "mobx-react-lite";
 import { faker } from '@faker-js/faker';
 
@@ -20,21 +22,11 @@ const Checkout = () => {
   const store = useStore();
   const router = useRouter();
 
-  const [customerName, setCustomerName] = useState(faker.person.fullName());
-  const [customerAddress, setCustomerAddress] = useState(faker.location.streetAddress());
-  const [customerCity, setCustomerCity] = useState(store.user.city || "123");
-  const [customerState, setCustomerState] = useState(store.user.state || "123");
-  const [customerZipCode, setCustomerZipCode] = useState(store.user.zipCode || "123");
-  const [customerCountry, setCustomerCountry] = useState(store.user.country || "123");
-  const [cardNumber, setCardNumber] = useState("123");
-  const [expirationDate, setExpirationDate] = useState("123");
-  const [cvv, setCvv] = useState("123");
-  const [billingAddress, setBillingAddress] = useState("123");
-  const [billingCity, setBillingCity] = useState(faker.location.city());
-  const [billingState, setBillingState] = useState(faker.location.state());
-  const [billingZipCode, setBillingZipCode] = useState(faker.location.zipCode());
-  const [billingCountry, setBillingCountry] = useState('USA');
-  const [billingSameAsShipping, setBillingSameAsShipping] = useState(false);
+  let expirationDateArray = faker.date.future().toISOString().slice(0, 7).split("-");
+  const [cardNumber, setCardNumber] = useState(faker.finance.creditCardNumber());
+  const [expirationDate, setExpirationDate] = useState(expirationDateArray[1] + "/" + expirationDateArray[0]);
+  const [cvv, setCvv] = useState(faker.number.int({ min: 100, max: 999 }).toString());
+  const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [shippingMethod, setShippingMethod] = useState("standard");
 
@@ -42,13 +34,13 @@ const Checkout = () => {
     if (!store.user.userId) {
       const email = faker.internet.email();
       store.user.setUserId(email);
-      store.user.setName(customerName);
       store.user.setEmail(email);
-      store.user.setAddress(customerAddress);
-      store.user.setCity(billingCity);
-      store.user.setState(billingState);
-      store.user.setZipCode(billingZipCode);
-      store.user.setCountry(billingCountry);
+      store.user.setName(faker.person.fullName());
+      store.user.setAddress(faker.location.streetAddress());
+      store.user.setCity(faker.location.city());
+      store.user.setState(faker.location.state());
+      store.user.setZipCode(faker.location.zipCode());
+      store.user.setCountry(faker.location.country());
 
       snowplowTracker?.setUserId(email);
 
@@ -56,6 +48,8 @@ const Checkout = () => {
         email: email,
         phone: faker.phone.number()
       });
+
+      router.refresh();
     }
   }, [store.user]);
 
@@ -119,19 +113,26 @@ const Checkout = () => {
     <main className="container grid justify-center pt-8">
       <CheckoutTitle />
 
-      <div className="grid gap-4">
-        <h1 className="text-xl">Order Summary</h1>
+      <div className="grid gap-4 m-8">
+        <div className="col gap-4 pb-8">
+          <h1 className="text-xl">Order Summary</h1>
+        </div>
 
-        {store.cart.products.map((item) => (
+        <div className="col gap-4 pb-8">
+          {store.cart.products.map((item) => (
           <div key={item.id} className="flex items-center justify-between">
-            <img src={item.imageUrl} alt={item.name} className="w-16 h-16" />
+            <div className="flex flex-col gap-2" style={{ minWidth: '90px', height: '60px', position: 'relative' }}>
+              <Image src={item.imageUrl} alt={item.name} width={90} height={60} />
+            </div>
             <div className="flex flex-col">
               <span>{item.name}</span>
               <span>${item.price.toFixed(2)}</span>
+              <span>Quantity: {item.quantity}</span>
             </div>
-            <span>Quantity: {item.quantity}</span>
           </div>
         ))}
+        </div>
+        
         <div className="flex justify-between items-center">
           <p className="text-lg font-semibold">
             Total: $
@@ -140,18 +141,18 @@ const Checkout = () => {
         </div>
 
         <ShippingInformation
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerAddress={customerAddress}
-          setCustomerAddress={setCustomerAddress}
-          customerCity={customerCity}
-          setCustomerCity={setCustomerCity}
-          customerState={customerState}
-          setCustomerState={setCustomerState}
-          customerZipCode={customerZipCode}
-          setCustomerZipCode={setCustomerZipCode}
-          customerCountry={customerCountry}
-          setCustomerCountry={setCustomerCountry}
+          customerName={store.user.name}
+          setCustomerName={(e) => store.user.setName(e)}
+          customerAddress={store.user.address}
+          setCustomerAddress={(e) => store.user.setAddress(e)}
+          customerCity={store.user.city}
+          setCustomerCity={(e) => store.user.setCity(e)}
+          customerState={store.user.state}
+          setCustomerState={(e) => store.user.setState(e)}
+          customerZipCode={store.user.zipCode}
+          setCustomerZipCode={(e) => store.user.setZipCode(e)}
+          customerCountry={store.user.country}
+          setCustomerCountry={(e) => store.user.setCountry(e)}
         />
 
         <PaymentInformation
@@ -165,16 +166,16 @@ const Checkout = () => {
           setExpirationDate={setExpirationDate}
           cvv={cvv}
           setCvv={setCvv}
-          billingAddress={billingAddress}
-          setBillingAddress={setBillingAddress}
-          billingCity={billingCity}
-          setBillingCity={setBillingCity}
-          billingState={billingState}
-          setBillingState={setBillingState}
-          billingZipCode={billingZipCode}
-          setBillingZipCode={setBillingZipCode}
-          billingCountry={billingCountry}
-          setBillingCountry={setBillingCountry}
+          billingAddress={store.user.address}
+          setBillingAddress={(e) => store.user.setAddress(e)}
+          billingCity={store.user.city}
+          setBillingCity={(e) => store.user.setCity(e)}
+          billingState={store.user.state}
+          setBillingState={(e) => store.user.setState(e)}
+          billingZipCode={store.user.zipCode}
+          setBillingZipCode={(e) => store.user.setZipCode(e)}
+          billingCountry={store.user.country}
+          setBillingCountry={(e) => store.user.setCountry(e)}
           billingSameAsShipping={billingSameAsShipping}
           setBillingSameAsShipping={setBillingSameAsShipping}
         />

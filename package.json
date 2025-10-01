@@ -10,7 +10,7 @@
     "snowtype": "npx @snowplow/snowtype generate"
   },
   "dependencies": {
-    "@faker-js/faker": "^9.6.0",
+    "@faker-js/faker": "^10.0.0",
     "@snowplow/browser-plugin-performance-navigation-timing": "^4.4.0",
     "@snowplow/browser-plugin-site-tracking": "^4.4.0",
     "@snowplow/browser-plugin-snowplow-ecommerce": "^4.4.0",

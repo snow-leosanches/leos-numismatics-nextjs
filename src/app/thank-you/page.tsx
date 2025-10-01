@@ -1,6 +1,16 @@
+"use client";
+
+import { observer } from "mobx-react-lite";
+
+import { useStore } from "@/store";
+
 export const dynamic = 'force-dynamic';
 
-export default function ThankYou() {
+const ThankYou = () => {
+  const store = useStore();
+
+  store.cart.resetCart();
+
   return (
     <main className="container grid justify-center pt-8">
       <div className="col gap-4 pb-8">
@@ -10,3 +20,5 @@ export default function ThankYou() {
     </main>
   );
 }
+
+export default observer(ThankYou);

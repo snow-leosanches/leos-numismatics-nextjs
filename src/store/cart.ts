@@ -97,7 +97,6 @@ export class CartStore {
   });
 
   removeProduct = action((productId: string) => {
-    // console.log("Products before removal:", this.products);
     const productIndex = this.products.findIndex((product) => product.id === productId);
     if (productIndex !== -1) {
       if (this.products[productIndex].quantity > 1) {
@@ -106,11 +105,15 @@ export class CartStore {
         this.products.splice(productIndex, 1);
       }
     }
-    // console.log("Products after removal:", this.products);
   });
 
   setProducts = action((products: ProductEntity[]) => {
     this.products = products;
+  });
+
+  resetCart = action(() => {
+    this.cartId = faker.string.alphanumeric(16);
+    this.products = [];
   });
 
   hydrate = action((data: CartEntity) => {

@@ -63,6 +63,18 @@ const Account = () => {
         Logout
       </button>
     </div>
+
+    <div className="col gap-4 pb-8">
+      <h2 className='text-xl'>Additional information</h2>
+    </div>
+
+    <div className="grid gap-4">
+      <p className="text-lg">Address: {store.user.address}</p>
+      <p className="text-lg">City: {store.user.city}</p>
+      <p className="text-lg">State: {store.user.state}</p>
+      <p className="text-lg">Zip Code: {store.user.zipCode}</p>
+      <p className="text-lg">Country: {store.user.country}</p>
+    </div>
   </main>
 }
 
