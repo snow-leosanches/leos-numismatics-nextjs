@@ -69,7 +69,16 @@ const Checkout = () => {
         quantity: item.quantity,
         currency: item.currency,
         category: 'Banknotes'
-      }))
+      })),
+      context: [{
+        schema: "iglu:com.leosnumismatics/demographics/jsonschema/1-0-0",
+        data: {
+          city: store.user.city,
+          state: store.user.state,
+          country: store.user.country,
+          zipCode: store.user.zipCode
+        }
+      }]
     });
 
     // Track using events defined in the Data Product

@@ -31,6 +31,28 @@ export type CustomerIdentification = {
 }
 
 /**
+ * Demographics customers' data. They do not comprise PII.
+ */
+export type Demographics = {
+    /**
+     * Customer's city
+     */
+    city: string;
+    /**
+     * Customer's Country.
+     */
+    country: string;
+    /**
+     * Customer's state.
+     */
+    state: string;
+    /**
+     * Customer's ZIP Code.
+     */
+    zip_code: string;
+}
+
+/**
  * Event structure for a User Update Profile operation.
  */
 export type UpdateUserProfile = {
@@ -200,6 +222,33 @@ export function createCustomerIdentification(customerIdentification: CustomerIde
     return {
         schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
         data: customerIdentification
+    }
+}
+/**
+ * Track a Snowplow event for Demographics.
+ * Demographics customers&#x27; data. They do not comprise PII.
+ */
+export function trackDemographics<T extends {} = any>(demographics: Demographics & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = demographics;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.leosnumismatics/demographics/jsonschema/1-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow Demographics entity.
+ */
+export function createDemographics(demographics: Demographics){
+    return {
+        schema: 'iglu:com.leosnumismatics/demographics/jsonschema/1-0-0',
+        data: demographics
     }
 }
 /**
@@ -625,7 +674,7 @@ export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventP
  * Tracks a Transaction event specification.
  * ID: ba719d07-7f68-4090-8c18-b75f0dd848e8
  */
-export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
+export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.CommonEcommerceEventProperties<Demographics>, trackers?: string[]){
     const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'ba719d07-7f68-4090-8c18-b75f0dd848e8',
         name: 'Transaction',
