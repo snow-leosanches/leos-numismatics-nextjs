@@ -13,6 +13,7 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next", "next/typescript"),
   { 
     rules: { 
+      "prefer-const": "warn",
       "react/no-unescaped-entities": "warn",
       "react-hooks/rules-of-hooks": "warn",
       // "@next/next/no-html-link": "warn",

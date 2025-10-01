@@ -22,7 +22,7 @@ const Checkout = () => {
   const store = useStore();
   const router = useRouter();
 
-  let expirationDateArray = faker.date.future().toISOString().slice(0, 7).split("-");
+  const expirationDateArray = faker.date.future().toISOString().slice(0, 7).split("-");
   const [cardNumber, setCardNumber] = useState(faker.finance.creditCardNumber());
   const [expirationDate, setExpirationDate] = useState(expirationDateArray[1] + "/" + expirationDateArray[0]);
   const [cvv, setCvv] = useState(faker.number.int({ min: 100, max: 999 }).toString());
