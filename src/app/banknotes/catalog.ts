@@ -33,6 +33,27 @@ export const banknotes: Banknote[] = [
         title: "100 Trillion Dollars (Zimbabwe)",
         description: "The Reserve Bank of Zimbabwe issued the 100 trillion dollar banknote in January 2009 during a period of hyperinflation.",
         price: 59,
+    },
+    {
+        id: "50-trillion-dollars-zimbabwe",
+        imageUrl: "/images/banknotes/50-trillion-dollars-zimbabwe.jpg",
+        title: "50 Trillion Dollars (Zimbabwe)",
+        description: "The Reserve Bank of Zimbabwe issued the 50 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        price: 12,
+    },
+    {
+        id: "20-trillion-dollars-zimbabwe",
+        imageUrl: "/images/banknotes/20-trillion-dollars-zimbabwe.jpg",
+        title: "20 Trillion Dollars (Zimbabwe)",
+        description: "The Reserve Bank of Zimbabwe issued the 20 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        price: 12,
+    },
+    {
+        id: "10-trillion-dollars-zimbabwe",
+        imageUrl: "/images/banknotes/10-trillion-dollars-zimbabwe.jpg",
+        title: "10 Trillion Dollars (Zimbabwe)",
+        description: "The Reserve Bank of Zimbabwe issued the 10 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        price: 12,
     }
 ];
 

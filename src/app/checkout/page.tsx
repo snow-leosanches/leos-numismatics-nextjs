@@ -76,7 +76,7 @@ const Checkout = () => {
           city: store.user.city,
           state: store.user.state,
           country: store.user.country,
-          zipCode: store.user.zipCode
+          zip_code: store.user.zipCode
         }
       }]
     });
