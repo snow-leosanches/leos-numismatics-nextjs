@@ -28,7 +28,8 @@ const getUniqueCountries = (): string[] => {
   return Array.from(countries).sort();
 };
 
-const SearchContentInner = observer(() => {
+// Component that uses useSearchParams - must be inside Suspense
+const SearchContentWithParams = () => {
   const searchParams = useSearchParams();
   
   // Get initial values from URL params
@@ -36,6 +37,30 @@ const SearchContentInner = observer(() => {
   const initialCountry = searchParams.get('country') || '';
   const initialMinPrice = searchParams.get('minPrice') || '';
   const initialMaxPrice = searchParams.get('maxPrice') || '';
+  
+  return <SearchContentInner 
+    initialQuery={initialQuery}
+    initialCountry={initialCountry}
+    initialMinPrice={initialMinPrice}
+    initialMaxPrice={initialMaxPrice}
+    searchParams={searchParams}
+  />;
+};
+
+// Main content component (doesn't use useSearchParams directly)
+const SearchContentInner = observer(({ 
+  initialQuery, 
+  initialCountry, 
+  initialMinPrice, 
+  initialMaxPrice,
+  searchParams
+}: {
+  initialQuery: string;
+  initialCountry: string;
+  initialMinPrice: string;
+  initialMaxPrice: string;
+  searchParams: URLSearchParams;
+}) => {
 
   const [query, setQuery] = useState(initialQuery);
   const [selectedCountry, setSelectedCountry] = useState(initialCountry);
@@ -352,7 +377,7 @@ export default function SearchPage() {
         </div>
       </main>
     }>
-      <SearchContentInner />
+      <SearchContentWithParams />
     </Suspense>
   );
 }
