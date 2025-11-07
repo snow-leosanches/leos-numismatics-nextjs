@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
 import { snowplowTracker } from "../../components/snowplow-tracker";
+import { trackCustomerIdentificationSpec } from "../../../snowtype/snowplow";
 import { knownCustomers } from './known-customers';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,11 @@ const LoginContent = () => {
     store.user.setCountry(faker.location.country());
 
     snowplowTracker?.setUserId(email);
+
+    trackCustomerIdentificationSpec({
+      email: email,
+      phone: faker.phone.number()
+    });
 
     router.push(returnUrl);
   }
@@ -61,6 +67,11 @@ const LoginContent = () => {
             store.user.setCountry(customer.country);
 
             snowplowTracker?.setUserId(customer.id);
+
+            trackCustomerIdentificationSpec({
+              email: customer.email,
+              phone: faker.phone.number()
+            });
 
             router.push(returnUrl);
           }}>{customer.name} ({customer.email})</button>

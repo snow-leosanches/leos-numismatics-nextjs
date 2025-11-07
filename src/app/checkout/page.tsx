@@ -14,7 +14,6 @@ import { ShippingInformation } from "./shipping-information";
 import { PaymentInformation } from "./payment-information";
 import { CheckoutTitle } from "./checkout-title";
 import { snowplowTracker } from "@/components/snowplow-tracker";
-import { trackCustomerIdentificationSpec } from "../../../snowtype/snowplow";
 
 export const dynamic = 'force-dynamic';
 
