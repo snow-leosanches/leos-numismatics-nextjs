@@ -8,8 +8,6 @@ import { trackSiteSearch } from "@snowplow/browser-plugin-site-tracking";
 import { banknotes, Banknote } from "../banknotes/catalog";
 import { BanknoteRow } from "../banknotes/banknote-row";
 
-export const dynamic = 'force-dynamic';
-
 // Helper function to extract country from title (e.g., "50 Dollars (Fiji)" -> "Fiji")
 const extractCountry = (title: string): string | null => {
   const match = title.match(/\(([^)]+)\)/);
@@ -59,7 +57,7 @@ const SearchContentInner = observer(({
   initialCountry: string;
   initialMinPrice: string;
   initialMaxPrice: string;
-  searchParams: URLSearchParams;
+  searchParams: ReturnType<typeof useSearchParams>;
 }) => {
 
   const [query, setQuery] = useState(initialQuery);
@@ -382,3 +380,5 @@ export default function SearchPage() {
   );
 }
 
+// Force dynamic rendering - moved to the bottom after the default export
+export const dynamic = 'force-dynamic';
