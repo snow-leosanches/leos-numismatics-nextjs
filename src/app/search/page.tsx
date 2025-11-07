@@ -8,6 +8,9 @@ import { trackSiteSearch } from "@snowplow/browser-plugin-site-tracking";
 import { banknotes, Banknote } from "../banknotes/catalog";
 import { BanknoteRow } from "../banknotes/banknote-row";
 
+// Force dynamic rendering - MUST be at top level
+export const dynamic = 'force-dynamic';
+
 // Helper function to extract country from title (e.g., "50 Dollars (Fiji)" -> "Fiji")
 const extractCountry = (title: string): string | null => {
   const match = title.match(/\(([^)]+)\)/);
@@ -203,7 +206,7 @@ const SearchContentInner = observer(({
       terms: searchTerms.length > 0 ? searchTerms : [''],
       filters: Object.keys(filters).length > 0 ? filters : undefined,
       totalResults: results.length,
-      pageResults: results.length, // Assuming all results are shown on first page
+      pageResults: results.length,
     });
   };
 
@@ -379,6 +382,3 @@ export default function SearchPage() {
     </Suspense>
   );
 }
-
-// Force dynamic rendering - moved to the bottom after the default export
-export const dynamic = 'force-dynamic';
