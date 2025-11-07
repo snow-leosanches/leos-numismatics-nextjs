@@ -3,11 +3,11 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { trackAddToCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
 import { useStore } from "@/store";
-import { useBuildHref } from "@/hooks/useBuildHref";
 
 export interface BanknoteRowProps {
   id: string;
@@ -19,7 +19,23 @@ export interface BanknoteRowProps {
 
 const BanknoteRowContent: React.FunctionComponent<BanknoteRowProps> = (props) => {
   const store = useStore();
-  const { buildHref } = useBuildHref();
+  const searchParams = useSearchParams();
+
+  // Build href with only UTM parameters preserved (not search query params)
+  const buildHrefWithUtmOnly = (path: string): string => {
+    const params = new URLSearchParams();
+    const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    
+    utmParams.forEach(param => {
+      const value = searchParams.get(param);
+      if (value) {
+        params.set(param, value);
+      }
+    });
+    
+    const queryString = params.toString();
+    return queryString ? `${path}?${queryString}` : path;
+  };
 
   const addToCart = () => {
     store.cart.addProduct({
@@ -72,7 +88,7 @@ const BanknoteRowContent: React.FunctionComponent<BanknoteRowProps> = (props) =>
       <p className="text-sm text-gray-500">{props.description}</p>
       <p className="text-md text-gray-500 font-bold">Price: ${props.price.toFixed(2)}</p>
       <div className="flex gap-2">
-        <Link href={buildHref(`/banknotes/${props.id}`)} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+        <Link href={buildHrefWithUtmOnly(`/banknotes/${props.id}`)} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
           View Details
         </Link>
         <button 

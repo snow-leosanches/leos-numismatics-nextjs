@@ -31,6 +31,9 @@ const NavLinksWithParams = () => {
         <Link href={buildHref("/banknotes")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
       </li>
       <li>
+        <Link href={buildHref("/search")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Search</Link>
+      </li>
+      <li>
         <Link href={buildHref("/cart")} className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
       </li>
     </>
@@ -61,6 +64,9 @@ const NavComponent: React.FunctionComponent = () => {
             <>
               <li>
                 <Link href="/banknotes" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Banknotes</Link>
+              </li>
+              <li>
+                <Link href="/search" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Search</Link>
               </li>
               <li>
                 <Link href="/cart" className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-orange-300 md:p-0 dark:text-white md:dark:hover:text-orange-200 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Your Cart</Link>
