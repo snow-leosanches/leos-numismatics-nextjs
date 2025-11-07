@@ -1,11 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
 import { ProductEntity } from "@/store/entities";
+import { useBuildHref } from "@/hooks/useBuildHref";
 
 import { BanknoteInCart } from "./banknote-in-cart";
 // import { trackProductRemovedFromCartSpec } from "../../../snowtype/snowplow";
@@ -13,9 +15,10 @@ import { trackRemoveFromCart } from "@snowplow/browser-plugin-snowplow-ecommerce
 
 export const dynamic = 'force-dynamic';
 
-const YourCart = () => {
+const YourCartContent = () => {
   const store = useStore();
   const router = useRouter();
+  const { buildHref } = useBuildHref();
 
   const removeProduct = (productId: string, name: string, price: number, quantity: number) => {
     store.cart.removeProduct(productId);
@@ -65,7 +68,7 @@ const YourCart = () => {
 
           <div className="flex justify-between items-center">
             <p className="text-lg font-semibold">Total: ${store.cart.products.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
-            <Link href="/checkout">
+            <Link href={buildHref("/checkout")}>
               <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
                 Checkout
               </button>
@@ -82,4 +85,21 @@ const YourCart = () => {
   );
 }
 
-export default observer(YourCart);
+const YourCart = observer(YourCartContent);
+
+export default function YourCartPage() {
+  return (
+    <Suspense fallback={
+      <main className="container grid justify-center pt-8">
+        <div className="col gap-4 pb-8">
+          <h1 className="text-2xl">Your Cart</h1>
+        </div>
+        <div className="grid gap-4">
+          <p>Loading...</p>
+        </div>
+      </main>
+    }>
+      <YourCart />
+    </Suspense>
+  );
+}

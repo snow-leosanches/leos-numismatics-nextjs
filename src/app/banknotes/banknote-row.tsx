@@ -1,9 +1,13 @@
+"use client";
+
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { trackAddToCart } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
 import { useStore } from "@/store";
+import { useBuildHref } from "@/hooks/useBuildHref";
 
 export interface BanknoteRowProps {
   id: string;
@@ -13,8 +17,9 @@ export interface BanknoteRowProps {
   price: number;
 }
 
-export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) => {
+const BanknoteRowContent: React.FunctionComponent<BanknoteRowProps> = (props) => {
   const store = useStore();
+  const { buildHref } = useBuildHref();
 
   const addToCart = () => {
     store.cart.addProduct({
@@ -67,7 +72,7 @@ export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) =>
       <p className="text-sm text-gray-500">{props.description}</p>
       <p className="text-md text-gray-500 font-bold">Price: ${props.price.toFixed(2)}</p>
       <div className="flex gap-2">
-        <Link href={`/banknotes/${props.id}`} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+        <Link href={buildHref(`/banknotes/${props.id}`)} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
           View Details
         </Link>
         <button 
@@ -78,4 +83,23 @@ export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) =>
       </div>
     </div>
   </div>
+}
+
+export const BanknoteRow: React.FunctionComponent<BanknoteRowProps> = (props) => {
+  return (
+    <Suspense fallback={
+      <div className="items-center pb-4 grid grid-cols-1 gap-4 md:flex">
+        <div className="flex flex-col gap-2" style={{ minWidth: '180px', height: '120px', position: 'relative' }}>
+          <div className="w-[180px] h-[120px] bg-gray-200 animate-pulse" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="h-6 w-48 bg-gray-200 animate-pulse rounded" />
+          <div className="h-4 w-64 bg-gray-200 animate-pulse rounded" />
+          <div className="h-5 w-24 bg-gray-200 animate-pulse rounded" />
+        </div>
+      </div>
+    }>
+      <BanknoteRowContent {...props} />
+    </Suspense>
+  );
 }

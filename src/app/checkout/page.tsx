@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 import { observer } from "mobx-react-lite";
@@ -18,9 +18,26 @@ import { trackCustomerIdentificationSpec } from "../../../snowtype/snowplow";
 
 export const dynamic = 'force-dynamic';
 
-const Checkout = () => {
+// Helper function to extract UTM parameters from search params
+const extractUtmParams = (searchParams: URLSearchParams): string => {
+  const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  const params = new URLSearchParams();
+  
+  utmParams.forEach(param => {
+    const value = searchParams.get(param);
+    if (value) {
+      params.set(param, value);
+    }
+  });
+  
+  return params.toString();
+};
+
+const CheckoutContent = () => {
   const store = useStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [persistenceLoaded, setPersistenceLoaded] = useState(false);
 
   const expirationDateArray = faker.date.future().toISOString().slice(0, 7).split("-");
   const [cardNumber, setCardNumber] = useState(faker.finance.creditCardNumber());
@@ -31,27 +48,23 @@ const Checkout = () => {
   const [shippingMethod, setShippingMethod] = useState("standard");
 
   useEffect(() => {
-    if (!store.user.userId) {
-      const email = faker.internet.email();
-      store.user.setUserId(email);
-      store.user.setEmail(email);
-      store.user.setName(faker.person.fullName());
-      store.user.setAddress(faker.location.streetAddress());
-      store.user.setCity(faker.location.city());
-      store.user.setState(faker.location.state());
-      store.user.setZipCode(faker.location.zipCode());
-      store.user.setCountry(faker.location.country());
+    // Wait for persistence to load from localStorage
+    const timer = setTimeout(() => {
+      setPersistenceLoaded(true);
+    }, 1500); // Slightly longer than the persistence delay
 
-      snowplowTracker?.setUserId(email);
+    return () => clearTimeout(timer);
+  }, []);
 
-      trackCustomerIdentificationSpec({
-        email: email,
-        phone: faker.phone.number()
-      });
-
-      router.refresh();
+  useEffect(() => {
+    // Only check after persistence has loaded
+    if (persistenceLoaded && !store.user.userId) {
+      // Extract UTM parameters and include them in the returnUrl
+      const utmParams = extractUtmParams(searchParams);
+      const returnUrl = utmParams ? `/checkout?${utmParams}` : '/checkout';
+      router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
     }
-  }, [store.user]);
+  }, [store.user.userId, persistenceLoaded, router, searchParams]);
 
   const completePurchase = () => {
     // Track using "Checkout Step" event from the Snowplow Ecommerce Plugin
@@ -199,4 +212,21 @@ const Checkout = () => {
   );
 }
 
-export default observer(Checkout);
+const Checkout = observer(CheckoutContent);
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <main className="container grid justify-center pt-8">
+        <div className="col gap-4 pb-8">
+          <h1 className="text-2xl">Checkout</h1>
+        </div>
+        <div className="grid gap-4">
+          <p>Loading...</p>
+        </div>
+      </main>
+    }>
+      <Checkout />
+    </Suspense>
+  );
+}

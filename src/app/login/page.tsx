@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { faker } from '@faker-js/faker';
 import { observer } from "mobx-react-lite";
 
@@ -10,9 +11,11 @@ import { knownCustomers } from './known-customers';
 
 export const dynamic = 'force-dynamic';
 
-const Login = () => {
+const LoginContent = () => {
   const store = useStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || '/';
 
   const performLogin = () => {
     const email = faker.internet.email();
@@ -27,7 +30,7 @@ const Login = () => {
 
     snowplowTracker?.setUserId(email);
 
-    router.push("/");
+    router.push(returnUrl);
   }
 
   return (
@@ -59,7 +62,7 @@ const Login = () => {
 
             snowplowTracker?.setUserId(customer.id);
 
-            router.push("/");
+            router.push(returnUrl);
           }}>{customer.name} ({customer.email})</button>
         ))}
       </div>
@@ -67,4 +70,21 @@ const Login = () => {
   );
 }
 
-export default observer(Login);
+const Login = observer(LoginContent);
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="container grid justify-center pt-8">
+        <div className="col gap-4 pb-8">
+          <h1 className="text-2xl">Login</h1>
+        </div>
+        <div className="grid gap-4">
+          <p>Loading...</p>
+        </div>
+      </main>
+    }>
+      <Login />
+    </Suspense>
+  );
+}
