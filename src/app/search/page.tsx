@@ -28,7 +28,7 @@ const getUniqueCountries = (): string[] => {
   return Array.from(countries).sort();
 };
 
-const SearchContent = () => {
+const SearchContentInner = observer(() => {
   const searchParams = useSearchParams();
   
   // Get initial values from URL params
@@ -337,10 +337,9 @@ const SearchContent = () => {
       </div>
     </main>
   );
-};
+});
 
-const Search = observer(SearchContent);
-
+// Export the page component with Suspense boundary
 export default function SearchPage() {
   return (
     <Suspense fallback={
@@ -353,7 +352,7 @@ export default function SearchPage() {
         </div>
       </main>
     }>
-      <Search />
+      <SearchContentInner />
     </Suspense>
   );
 }
