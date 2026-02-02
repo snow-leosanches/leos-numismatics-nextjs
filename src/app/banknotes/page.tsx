@@ -35,24 +35,32 @@ const Banknotes = () => {
     });
   }, []);
 
-  return <main className="container grid justify-center pt-8 px-4">
-    <div className="col gap-4 pb-8">
-      <h1 className="text-2xl">Our Banknotes</h1>
-    </div>
+  return (
+    <main className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12">
+      <header className="flex flex-col gap-2 pb-8">
+        <p className="text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+          Catalog
+        </p>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          Our Banknotes
+        </h1>
+        <div className="h-px w-12 bg-midnight dark:bg-tahiti rounded-full mt-1" aria-hidden />
+      </header>
 
-    <div className="grid gap-4">
-      {banknotes.map((banknote: Banknote) => (
-        <BanknoteRow
-          id={banknote.id}
-          key={banknote.id}
-          imageUrl={banknote.imageUrl}
-          title={banknote.title}
-          description={banknote.description}
-          price={banknote.price}
-        />
-      ))}
-    </div>
-  </main>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {banknotes.map((banknote: Banknote) => (
+          <BanknoteRow
+            id={banknote.id}
+            key={banknote.id}
+            imageUrl={banknote.imageUrl}
+            title={banknote.title}
+            description={banknote.description}
+            price={banknote.price}
+          />
+        ))}
+      </div>
+    </main>
+  );
 }
 
 export default observer(Banknotes);

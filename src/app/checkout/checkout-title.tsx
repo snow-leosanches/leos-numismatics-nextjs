@@ -37,7 +37,15 @@ export const CheckoutTitle: React.FunctionComponent = () => {
     }); */
   }, []);
 
-  return <div className="col gap-4 pb-8">
-    <h1 className="text-2xl">Checkout</h1>
-  </div>
+  return (
+    <div className="flex flex-col gap-2 pb-6">
+      <p className="text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+        Secure checkout
+      </p>
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        Checkout
+      </h1>
+      <div className="h-px w-12 bg-midnight dark:bg-tahiti rounded-full mt-1" aria-hidden />
+    </div>
+  );
 }
