@@ -80,14 +80,14 @@ const BanknoteRowContent: React.FunctionComponent<BanknoteRowProps> = (props) =>
     <article className="group flex flex-col overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50 shadow-sm transition-shadow hover:shadow-md">
       <Link
         href={buildHrefWithUtmOnly(`/banknotes/${props.id}`)}
-        className="relative block aspect-[3/2] w-full overflow-hidden bg-neutral-200 dark:bg-neutral-700"
+        className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden bg-neutral-200 dark:bg-neutral-700"
       >
         <Image
           src={props.imageUrl}
           alt={props.title}
           width={360}
           height={240}
-          className="object-cover transition-transform duration-200 group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition-transform duration-200 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
       </Link>

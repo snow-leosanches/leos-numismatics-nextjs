@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { trackPageView } from "@snowplow/browser-tracker";
@@ -12,13 +12,16 @@ import { Banknote, banknotes } from "./catalog";
 
 export const dynamic = 'force-dynamic';
 
-const Banknotes = () => {
-  // Apprach 1: using hooks.
-  /* const snowplowTracker = useSnowplow();
+type ColumnsPerRow = 1 | 2 | 3;
 
-  useEffect(() => {
-    snowplowTracker?.trackPageView();
-  }, []); */
+const gridClassByColumns: Record<ColumnsPerRow, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-1 md:grid-cols-2",
+  3: "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+};
+
+const Banknotes = () => {
+  const [columnsPerRow, setColumnsPerRow] = useState<ColumnsPerRow>(1);
 
   // Approach 2: using `trackPageView` directly.
   useEffect(() => {
@@ -37,17 +40,43 @@ const Banknotes = () => {
 
   return (
     <main className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12">
-      <header className="flex flex-col gap-2 pb-8">
-        <p className="text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-          Catalog
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          Our Banknotes
-        </h1>
-        <div className="h-px w-12 bg-midnight dark:bg-tahiti rounded-full mt-1" aria-hidden />
+      <header className="flex flex-col gap-4 pb-8">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            Catalog
+          </p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            Our Banknotes
+          </h1>
+          <div className="h-px w-12 bg-midnight dark:bg-tahiti rounded-full mt-1" aria-hidden />
+        </div>
+
+        <div className="flex items-center gap-2" role="group" aria-label="Banknotes per row">
+          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mr-1">
+            Bankotes per row:
+          </span>
+          {([1, 2, 3] as const).map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setColumnsPerRow(n)}
+              aria-pressed={columnsPerRow === n}
+              aria-label={`${n} banknote${n > 1 ? "s" : ""} per row`}
+              className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                n > 1 ? "hidden md:inline-flex" : ""
+              } ${
+                columnsPerRow === n
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-neutral-300 dark:border-neutral-600 bg-transparent text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </header>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={`grid gap-6 ${gridClassByColumns[columnsPerRow]}`}>
         {banknotes.map((banknote: Banknote) => (
           <BanknoteRow
             id={banknote.id}
