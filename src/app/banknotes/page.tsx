@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import { observer } from "mobx-react-lite";
 
 import { trackPageView } from "@snowplow/browser-tracker";
 import { trackProductListView } from "@snowplow/browser-plugin-snowplow-ecommerce";
 
 // import { useSnowplow } from "@/hooks/useSnowplow";
+import { useNavigateWithQuery } from "@/hooks/useNavigateWithQuery";
 import { BanknoteRow } from "./banknote-row";
 import { Banknote, banknotes } from "./catalog";
 
@@ -20,8 +22,26 @@ const gridClassByColumns: Record<ColumnsPerRow, string> = {
   3: "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
 };
 
+function parseColsParam(value: string | null): ColumnsPerRow {
+  if (value === null) return 3;
+  const n = parseInt(value, 10);
+  if (n === 1 || n === 2 || n === 3) return n;
+  return 3;
+}
+
 const Banknotes = () => {
-  const [columnsPerRow, setColumnsPerRow] = useState<ColumnsPerRow>(1);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replaceWithQuery } = useNavigateWithQuery();
+
+  const columnsPerRow = useMemo(
+    () => parseColsParam(searchParams.get("cols")),
+    [searchParams]
+  );
+
+  const setColumnsPerRow = (n: ColumnsPerRow) => {
+    replaceWithQuery(pathname, { cols: String(n) });
+  };
 
   // Approach 2: using `trackPageView` directly.
   useEffect(() => {

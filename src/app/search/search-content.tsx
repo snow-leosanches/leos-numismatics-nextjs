@@ -1,12 +1,28 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { observer } from "mobx-react-lite";
 import { trackSiteSearch } from "@snowplow/browser-plugin-site-tracking";
 
+import { useNavigateWithQuery } from "@/hooks/useNavigateWithQuery";
 import { banknotes, Banknote } from "../banknotes/catalog";
 import { BanknoteRow } from "../banknotes/banknote-row";
+
+type ColumnsPerRow = 1 | 2 | 3;
+
+const gridClassByColumns: Record<ColumnsPerRow, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-1 md:grid-cols-2",
+  3: "grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+};
+
+function parseColsParam(value: string | null): ColumnsPerRow {
+  if (value === null) return 3;
+  const n = parseInt(value, 10);
+  if (n === 1 || n === 2 || n === 3) return n;
+  return 3;
+}
 
 // Get all unique countries from banknotes
 const getUniqueCountries = (): string[] => {
@@ -19,7 +35,18 @@ const getUniqueCountries = (): string[] => {
 
 export const SearchContent = observer(() => {
   const searchParams = useSearchParams();
-  
+  const pathname = usePathname();
+  const { replaceWithQuery } = useNavigateWithQuery();
+
+  const columnsPerRow = useMemo(
+    () => parseColsParam(searchParams.get("cols")),
+    [searchParams]
+  );
+
+  const setColumnsPerRow = (n: ColumnsPerRow) => {
+    replaceWithQuery(pathname, { cols: String(n) });
+  };
+
   // Get initial values from URL params
   const initialQuery = searchParams.get('q') || '';
   const initialCountry = searchParams.get('country') || '';
@@ -75,7 +102,7 @@ export const SearchContent = observer(() => {
   }, [activeQuery, activeCountry, activeMinPrice, activeMaxPrice]);
 
   const updateURL = () => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
     
     // Preserve UTM parameters from current URL
     const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
@@ -89,22 +116,31 @@ export const SearchContent = observer(() => {
     // Add search parameters
     if (query) {
       params.set('q', query);
+    } else {
+      params.delete('q');
     }
     
     if (selectedCountry) {
       params.set('country', selectedCountry);
+    } else {
+      params.delete('country');
     }
     
     if (minPrice) {
       params.set('minPrice', minPrice);
+    } else {
+      params.delete('minPrice');
     }
     
     if (maxPrice) {
       params.set('maxPrice', maxPrice);
+    } else {
+      params.delete('maxPrice');
     }
     
-    const newUrl = params.toString() 
-      ? `${window.location.pathname}?${params.toString()}`
+    const queryString = params.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
       : window.location.pathname;
     window.history.pushState({}, '', newUrl);
   };
@@ -202,12 +238,15 @@ export const SearchContent = observer(() => {
   };
 
   return (
-    <main className="container grid justify-center pt-8 px-4">
-      <div className="col gap-4 pb-8">
-        <h1 className="text-2xl">Search Banknotes</h1>
-      </div>
+    <main className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12">
+      <header className="flex flex-col gap-2 pb-10">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          Search Banknotes
+        </h1>
+        <div className="h-px w-12 bg-midnight dark:bg-tahiti rounded-full" aria-hidden />
+      </header>
 
-      <form onSubmit={handleSearch} className="grid gap-4 pb-8 w-full max-w-4xl">
+      <form onSubmit={handleSearch} className="grid gap-6 pb-12 w-full">
         {/* Text Search */}
         <div className="flex flex-col gap-2">
           <label htmlFor="search" className="text-sm font-medium">
@@ -244,7 +283,7 @@ export const SearchContent = observer(() => {
         </div>
 
         {/* Price Range */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor="minPrice" className="text-sm font-medium">
               Minimum Price ($)
@@ -296,17 +335,40 @@ export const SearchContent = observer(() => {
       </form>
 
       {/* Results */}
-      <div className="grid gap-4 w-full max-w-4xl">
-        <div className="flex justify-between items-center">
+      <div className="grid gap-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <h2 className="text-xl">
             {filteredBanknotes.length === 0
               ? 'No banknotes found'
               : `Found ${filteredBanknotes.length} banknote${filteredBanknotes.length !== 1 ? 's' : ''}`}
           </h2>
+          <div className="flex items-center gap-2" role="group" aria-label="Banknotes per row">
+            <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mr-1">
+              Banknotes per row:
+            </span>
+            {([1, 2, 3] as const).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setColumnsPerRow(n)}
+                aria-pressed={columnsPerRow === n}
+                aria-label={`${n} banknote${n > 1 ? "s" : ""} per row`}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                  n > 1 ? "hidden md:inline-flex" : ""
+                } ${
+                  columnsPerRow === n
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-neutral-300 dark:border-neutral-600 bg-transparent text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         </div>
 
         {filteredBanknotes.length > 0 ? (
-          <div className="grid gap-4">
+          <div className={`grid gap-6 ${gridClassByColumns[columnsPerRow]}`}>
             {filteredBanknotes.map((banknote: Banknote) => (
               <BanknoteRow
                 key={banknote.id}

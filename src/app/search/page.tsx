@@ -6,13 +6,11 @@ export const dynamic = 'force-dynamic';
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <main className="container grid justify-center pt-8 px-4">
-        <div className="col gap-4 pb-8">
-          <h1 className="text-2xl">Search Banknotes</h1>
-        </div>
-        <div className="grid gap-4">
-          <p>Loading...</p>
-        </div>
+      <main className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12">
+        <header className="flex flex-col gap-2 pb-10">
+          <h1 className="text-3xl font-semibold tracking-tight">Search Banknotes</h1>
+        </header>
+        <p className="text-neutral-500">Loading...</p>
       </main>
     }>
       <SearchContent />

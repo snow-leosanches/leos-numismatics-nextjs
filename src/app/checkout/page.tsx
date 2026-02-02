@@ -12,6 +12,7 @@ import { ProductEntity } from "@/store/entities";
 import { applyVoucher } from "@/components/voucher";
 import { banknotes } from "@/app/banknotes/catalog";
 // import { trackCheckoutCompletedSpec } from "../../../snowtype/snowplow";
+import { trackVoucherAppliedSpec } from "../../../snowtype/snowplow";
 import { trackTransaction } from "@snowplow/browser-plugin-snowplow-ecommerce";
 import { ShippingInformation } from "./shipping-information";
 import { PaymentInformation } from "./payment-information";
@@ -70,6 +71,8 @@ const CheckoutContent = () => {
       setVoucherError(result.message);
       return;
     }
+    const appliedCode = voucherCodeInput.trim().toUpperCase();
+
     if (result.type === "free") {
       store.cart.addProduct(
         new ProductEntity(
@@ -82,14 +85,31 @@ const CheckoutContent = () => {
           result.product.quantity
         )
       );
-      store.cart.setAppliedVoucher(voucherCodeInput.trim().toUpperCase(), {
+      store.cart.setAppliedVoucher(appliedCode, {
         type: "free",
         productId: result.product.id,
         catalogPrice: result.catalogPrice,
       });
     } else {
-      store.cart.setAppliedVoucher(voucherCodeInput.trim().toUpperCase(), result);
+      store.cart.setAppliedVoucher(appliedCode, result);
     }
+
+    const discountAmount =
+      result.type === "item"
+        ? (() => {
+            const line = store.cart.products.find((p) => p.id === result.productId);
+            return line ? (line.price * line.quantity * result.percent) / 100 : 0;
+          })()
+        : result.type === "cart"
+          ? (store.cart.total * result.percent) / 100
+          : result.catalogPrice;
+
+    trackVoucherAppliedSpec({
+      code: appliedCode,
+      discount_amount: discountAmount,
+      ...(result.type === "free" && { free_product_id: result.product.id }),
+    });
+
     setVoucherCodeInput("");
   };
 
