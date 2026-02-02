@@ -4,6 +4,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/1-mark-darlehnskassenschein.png",
         title: "1 Mark (Darlehnskassenschein)",
         description: "„Darlehenskassenscheine“ were banknotes issued between 1914 and 1922 by the Reichsschuldenverwaltung (Reich debt administration).",
+        country: "Germany",
         price: 1.90,
     },
     {
@@ -11,6 +12,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/50-dollars-fiji.png",
         title: "50 Dollars (Fiji)",
         description: "The banknote celebrates Fiji's past capturing the historic first raising of the Fijian flag at Albeit Park, Suva on 10 October 1970 depicting the birth of Fiji as an independent nation.",
+        country: "Fiji",
         price: 43,
     },
     {
@@ -18,6 +20,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/egimilliard-b-pengo-hungary.png",
         title: "Egimilliard B. Pengo (Hungary)",
         description: "One billion trillion Pengoes (1 Sextillion Pengoes = 10²¹)",
+        country: "Hungary",
         price: 1200,
     },
     {
@@ -25,6 +28,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/10-000-000-000-dinaras-yugoslavia.jpg",
         title: "10,000,000,000 Dinaras (Yugoslavia)",
         description: "The 10 billion dinar banknote was issued in 1993 during a period of hyperinflation in the former Yugoslavia.",
+        country: "Yugoslavia",
         price: 12,
     },
     {
@@ -32,6 +36,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/100-trillion-dollars-zimbabwe.jpg",
         title: "100 Trillion Dollars (Zimbabwe)",
         description: "The Reserve Bank of Zimbabwe issued the 100 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        country: "Zimbabwe",
         price: 59,
     },
     {
@@ -39,6 +44,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/50-trillion-dollars-zimbabwe.jpg",
         title: "50 Trillion Dollars (Zimbabwe)",
         description: "The Reserve Bank of Zimbabwe issued the 50 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        country: "Zimbabwe",
         price: 12,
     },
     {
@@ -46,6 +52,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/20-trillion-dollars-zimbabwe.jpg",
         title: "20 Trillion Dollars (Zimbabwe)",
         description: "The Reserve Bank of Zimbabwe issued the 20 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        country: "Zimbabwe",
         price: 12,
     },
     {
@@ -53,6 +60,7 @@ export const banknotes: Banknote[] = [
         imageUrl: "/images/banknotes/10-trillion-dollars-zimbabwe.jpg",
         title: "10 Trillion Dollars (Zimbabwe)",
         description: "The Reserve Bank of Zimbabwe issued the 10 trillion dollar banknote in January 2009 during a period of hyperinflation.",
+        country: "Zimbabwe",
         price: 12,
     }
 ];
@@ -63,4 +71,5 @@ export type Banknote = {
     title: string;
     description: string;
     price: number;
+    country: string;
 };

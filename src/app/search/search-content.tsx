@@ -8,20 +8,11 @@ import { trackSiteSearch } from "@snowplow/browser-plugin-site-tracking";
 import { banknotes, Banknote } from "../banknotes/catalog";
 import { BanknoteRow } from "../banknotes/banknote-row";
 
-// Helper function to extract country from title (e.g., "50 Dollars (Fiji)" -> "Fiji")
-const extractCountry = (title: string): string | null => {
-  const match = title.match(/\(([^)]+)\)/);
-  return match ? match[1] : null;
-};
-
 // Get all unique countries from banknotes
 const getUniqueCountries = (): string[] => {
   const countries = new Set<string>();
   banknotes.forEach(banknote => {
-    const country = extractCountry(banknote.title);
-    if (country) {
-      countries.add(country);
-    }
+    countries.add(banknote.country);
   });
   return Array.from(countries).sort();
 };
@@ -64,7 +55,7 @@ export const SearchContent = observer(() => {
 
       // Country filter
       if (activeCountry) {
-        const banknoteCountry = extractCountry(banknote.title);
+        const banknoteCountry = banknote.country;
         if (banknoteCountry !== activeCountry) {
           return false;
         }
@@ -159,7 +150,7 @@ export const SearchContent = observer(() => {
         }
       }
       if (selectedCountry) {
-        const banknoteCountry = extractCountry(banknote.title);
+        const banknoteCountry = banknote.country;
         if (banknoteCountry !== selectedCountry) {
           return false;
         }
