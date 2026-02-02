@@ -17,6 +17,30 @@ type TransactionError = any;
 type CheckoutStep = any;
 
 /**
+ * Data structure for when an item gets added to a wishlist
+ */
+export type WishlistAction = {
+    /**
+     * The type of wishlist action
+     */
+    action?: Action;
+    /**
+     * From where was the item added to the wishlist
+     */
+    screen?: Screen;
+}
+
+/**
+ * The type of wishlist action
+ */
+export type Action = "add" | "remove" | "create" | "delete" | "rename";
+
+/**
+ * From where was the item added to the wishlist
+ */
+export type Screen = "home" | "search_results" | "details";
+
+/**
  * Structure for events that identify a user, with their user pieces
  */
 export type CustomerIdentification = {
@@ -28,6 +52,24 @@ export type CustomerIdentification = {
      * The customer's phone
      */
     phone?: null | string;
+}
+
+/**
+ * Data structure used when a voucher is applied to a cart during a checkout process.
+ */
+export type VoucherApplied = {
+    /**
+     * The voucher code.
+     */
+    code: string;
+    /**
+     * The discount amount
+     */
+    discount_amount: number;
+    /**
+     * When the voucher gives a product for free, the product id.
+     */
+    free_product_id?: null | string;
 }
 
 /**
@@ -177,7 +219,7 @@ export type SnowplowEcommerceActionTrackProductViewType = "product_view";
 /**
  * Creates a Snowplow Event Specification entity.
  */
-export function createEventSpecification(eventSpecification: EventSpecification){
+export function createEventSpecification(eventSpecification: Omit<EventSpecification, 'data_product_domain'> & Partial<Pick<EventSpecification, 'data_product_domain'>>){
     return {
         schema:
             'iglu:com.snowplowanalytics.snowplow/event_specification/jsonschema/1-0-3',
@@ -193,10 +235,37 @@ interface EventSpecification {
     name: string;
     data_product_id: string;
     data_product_name: string;
-    data_product_domain: string;
+    data_product_domain?: string;
 }
 
 type ContextsOrTimestamp<T = any> = Omit<CommonEventProperties<T>, 'context'> & { context?: SelfDescribingJson<T>[] | null | undefined }
+/**
+ * Track a Snowplow event for WishlistAction.
+ * Data structure for when an item gets added to a wishlist
+ */
+export function trackWishlistAction<T extends {} = any>(wishlistAction: WishlistAction & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = wishlistAction;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.snplow.sales.aws.travel/wishlist_action/jsonschema/1-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow WishlistAction entity.
+ */
+export function createWishlistAction(wishlistAction: WishlistAction){
+    return {
+        schema: 'iglu:com.snplow.sales.aws.travel/wishlist_action/jsonschema/1-0-0',
+        data: wishlistAction
+    }
+}
 /**
  * Track a Snowplow event for CustomerIdentification.
  * Structure for events that identify a user, with their user pieces
@@ -222,6 +291,33 @@ export function createCustomerIdentification(customerIdentification: CustomerIde
     return {
         schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
         data: customerIdentification
+    }
+}
+/**
+ * Track a Snowplow event for VoucherApplied.
+ * Data structure used when a voucher is applied to a cart during a checkout process.
+ */
+export function trackVoucherApplied<T extends {} = any>(voucherApplied: VoucherApplied & ContextsOrTimestamp<T>, trackers?: string[]){
+    const { context, timestamp, ...data } = voucherApplied;
+    const event: SelfDescribingJson = {
+        schema: 'iglu:com.leosnumismatics/voucher_applied/jsonschema/1-0-0',
+        data
+    };
+
+    trackSelfDescribingEvent({
+        event,
+        context,
+        timestamp,
+    }, trackers);
+}
+
+/**
+ * Creates a Snowplow VoucherApplied entity.
+ */
+export function createVoucherApplied(voucherApplied: VoucherApplied){
+    return {
+        schema: 'iglu:com.leosnumismatics/voucher_applied/jsonschema/1-0-0',
+        data: voucherApplied
     }
 }
 /**
@@ -478,15 +574,39 @@ function trackSnowplowEcommerceActionTrackProductView<T extends {} = any>(snowpl
 
 
 /**
+ * Tracks a AddToWishlist event specification.
+ * ID: 1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3
+ */
+export function trackAddToWishlistSpec(addToWishlist: WishlistAction & ContextsOrTimestamp, trackers?: string[]){
+    const eventSpecificationContext = createEventSpecification({
+        id: '1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3',
+        name: 'Add to wishlist',
+        data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
+        data_product_domain: 'E-commerce'
+    });
+
+    const context = Array.isArray(addToWishlist.context)
+        ? [...addToWishlist.context, eventSpecificationContext]
+        : [eventSpecificationContext];
+
+    const modifiedAddToWishlist = {
+        ...addToWishlist,
+        context,
+    };
+
+    trackWishlistAction<Record<string, unknown> | EventSpecification>(modifiedAddToWishlist, trackers);
+}
+/**
  * Tracks a CustomerIdentification event specification.
  * ID: 75178748-ae15-4828-b9f4-b49ee638a841
  */
 export function trackCustomerIdentificationSpec(customerIdentification: CustomerIdentification & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '75178748-ae15-4828-b9f4-b49ee638a841',
         name: 'Customer Identification',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -502,15 +622,39 @@ export function trackCustomerIdentificationSpec(customerIdentification: Customer
     trackCustomerIdentification<Record<string, unknown> | EventSpecification>(modifiedCustomerIdentification, trackers);
 }
 /**
+ * Tracks a VoucherApplied event specification.
+ * ID: 90ac7e50-90e8-43ee-ae75-532a428b01c2
+ */
+export function trackVoucherAppliedSpec(voucherApplied: VoucherApplied & ContextsOrTimestamp, trackers?: string[]){
+    const eventSpecificationContext = createEventSpecification({
+        id: '90ac7e50-90e8-43ee-ae75-532a428b01c2',
+        name: 'Voucher Applied',
+        data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
+        data_product_domain: 'E-commerce'
+    });
+
+    const context = Array.isArray(voucherApplied.context)
+        ? [...voucherApplied.context, eventSpecificationContext]
+        : [eventSpecificationContext];
+
+    const modifiedVoucherApplied = {
+        ...voucherApplied,
+        context,
+    };
+
+    trackVoucherApplied<Record<string, unknown> | EventSpecification>(modifiedVoucherApplied, trackers);
+}
+/**
  * Tracks a UpdateProfile event specification.
  * ID: fbe39734-dbab-4170-8722-878fd0973c29
  */
 export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'fbe39734-dbab-4170-8722-878fd0973c29',
         name: 'Update Profile',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -527,15 +671,16 @@ export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & Contex
 }
 
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a InternalPromotionView event specification.
  * ID: 2713682c-0405-4caf-85c6-ea6d9ae23b75
  */
 export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '2713682c-0405-4caf-85c6-ea6d9ae23b75',
         name: 'Internal promotion view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -551,15 +696,16 @@ export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPro
     Ecom.trackPromotionView(modifiedInternalPromotionView, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a ProductListView event specification.
  * ID: 33afb089-2070-4e43-a261-53066b9cea43
  */
 export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '33afb089-2070-4e43-a261-53066b9cea43',
         name: 'Product list view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -575,15 +721,16 @@ export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & E
     Ecom.trackProductListView(modifiedProductListView, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a AddToCart event specification.
  * ID: 3eb11c24-27fb-4b13-94e2-aa3c4d242e9c
  */
 export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '3eb11c24-27fb-4b13-94e2-aa3c4d242e9c',
         name: 'Add to cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -599,15 +746,16 @@ export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEv
     Ecom.trackAddToCart(modifiedAddToCart, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a InternalPromotionClick event specification.
  * ID: 538d7168-b6ea-46ab-b529-24035974d6d2
  */
 export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '538d7168-b6ea-46ab-b529-24035974d6d2',
         name: 'Internal promotion click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -623,15 +771,16 @@ export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPP
     Ecom.trackPromotionClick(modifiedInternalPromotionClick, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a RemoveFromCart event specification.
  * ID: aef9adcb-660a-4d20-86ba-7ba040600a4d
  */
 export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'aef9adcb-660a-4d20-86ba-7ba040600a4d',
         name: 'Remove from cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -647,15 +796,16 @@ export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonE
     Ecom.trackRemoveFromCart(modifiedRemoveFromCart, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a Refund event specification.
  * ID: b5b53547-0128-436c-b0ce-87b623008b6a
  */
 export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'b5b53547-0128-436c-b0ce-87b623008b6a',
         name: 'Refund',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -671,15 +821,16 @@ export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventP
     Ecom.trackRefund(modifiedRefund, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a Transaction event specification.
  * ID: ba719d07-7f68-4090-8c18-b75f0dd848e8
  */
 export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.CommonEcommerceEventProperties<Demographics>, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'ba719d07-7f68-4090-8c18-b75f0dd848e8',
         name: 'Transaction',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -695,15 +846,16 @@ export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.Comm
     Ecom.trackTransaction(modifiedTransaction, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a TransactionError event specification.
  * ID: bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0
  */
 export function trackTransactionErrorSpec(transactionError: Ecom.TransactionError & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0',
         name: 'Transaction Error',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -719,15 +871,16 @@ export function trackTransactionErrorSpec(transactionError: Ecom.TransactionErro
     Ecom.trackTransactionError(modifiedTransactionError, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a CheckoutStep event specification.
  * ID: d1a0e8ce-2130-495f-b8db-1d950c23f9b5
  */
 export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'd1a0e8ce-2130-495f-b8db-1d950c23f9b5',
         name: 'Checkout step',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -743,15 +896,16 @@ export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.Com
     Ecom.trackCheckoutStep(modifiedCheckoutStep, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a ProductListClick event specification.
  * ID: d4010334-dd01-443f-a065-683b00ee0ac9
  */
 export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'd4010334-dd01-443f-a065-683b00ee0ac9',
         name: 'Product list click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 
@@ -767,15 +921,16 @@ export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent 
     Ecom.trackProductListClick(modifiedProductListClick, trackers);
 }
 /**
+ * @deprecated Outdated data structure detected.
  * Tracks a TrackProductView event specification.
  * ID: e35e222f-93d9-49e0-9a02-9d39d813de70
  */
 export function trackTrackProductViewSpec(trackProductView: Ecom.Product & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'e35e222f-93d9-49e0-9a02-9d39d813de70',
         name: 'Track product view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
-        data_product_name: 'Leo&#x27;s Numismatics Web',
+        data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
         data_product_domain: 'E-commerce'
     });
 

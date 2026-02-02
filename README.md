@@ -22,6 +22,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Voucher codes (how to try it)
+
+At checkout you can optionally apply a voucher code. The code prefix determines the type of discount:
+
+- **`ITEM_SAVE`** (or any code starting with **`ITEM`**): one random product in your cart gets a **5–20%** discount.
+- **`CART_10`** (or any code starting with **`CART`**): the **entire cart** gets a **5–20%** discount.
+- **`FREE_GIFT`** (or any code starting with **`FREE`**): one **random free item** from the catalog is added to your cart (price $0).
+
+The applied voucher is stored with the cart and survives page refresh (the discounted total is shown on the cart page too).
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

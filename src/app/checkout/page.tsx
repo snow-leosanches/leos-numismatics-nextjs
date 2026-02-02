@@ -8,6 +8,9 @@ import { observer } from "mobx-react-lite";
 import { faker } from '@faker-js/faker';
 
 import { useStore } from "@/store";
+import { ProductEntity } from "@/store/entities";
+import { applyVoucher } from "@/components/voucher";
+import { banknotes } from "@/app/banknotes/catalog";
 // import { trackCheckoutCompletedSpec } from "../../../snowtype/snowplow";
 import { trackTransaction } from "@snowplow/browser-plugin-snowplow-ecommerce";
 import { ShippingInformation } from "./shipping-information";
@@ -45,6 +48,55 @@ const CheckoutContent = () => {
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [shippingMethod, setShippingMethod] = useState("standard");
+  const [voucherCodeInput, setVoucherCodeInput] = useState("");
+  const [voucherError, setVoucherError] = useState<string | null>(null);
+
+  const catalogForVoucher = banknotes.map((b) => ({
+    id: b.id,
+    title: b.title,
+    description: b.description,
+    price: b.price,
+    imageUrl: b.imageUrl,
+  }));
+
+  const handleApplyVoucher = () => {
+    setVoucherError(null);
+    const result = applyVoucher(
+      voucherCodeInput,
+      store.cart.products.map((p) => ({ id: p.id, price: p.price, quantity: p.quantity })),
+      catalogForVoucher
+    );
+    if (result.type === "error") {
+      setVoucherError(result.message);
+      return;
+    }
+    if (result.type === "free") {
+      store.cart.addProduct(
+        new ProductEntity(
+          result.product.id,
+          result.product.name,
+          result.product.description,
+          result.product.price,
+          result.product.currency,
+          result.product.imageUrl,
+          result.product.quantity
+        )
+      );
+      store.cart.setAppliedVoucher(voucherCodeInput.trim().toUpperCase(), {
+        type: "free",
+        productId: result.product.id,
+        catalogPrice: result.catalogPrice,
+      });
+    } else {
+      store.cart.setAppliedVoucher(voucherCodeInput.trim().toUpperCase(), result);
+    }
+    setVoucherCodeInput("");
+  };
+
+  const handleRemoveVoucher = () => {
+    store.cart.removeVoucher();
+    setVoucherError(null);
+  };
 
   useEffect(() => {
     // Wait for persistence to load from localStorage
@@ -66,13 +118,16 @@ const CheckoutContent = () => {
   }, [store.user.userId, persistenceLoaded, router, searchParams]);
 
   const completePurchase = () => {
+    const shippingAmount = 10;
+    const taxAmount = 5;
+    const finalTotal = store.cart.totalAfterDiscount + shippingAmount + taxAmount;
     // Track using "Checkout Step" event from the Snowplow Ecommerce Plugin
     trackTransaction({
       currency: 'USD',
       payment_method: paymentMethod,
-      shipping: 10,
-      tax: 5,
-      revenue: store.cart.products.reduce((acc, item) => acc + item.price * item.quantity, 0) + 15,
+      shipping: shippingAmount,
+      tax: taxAmount,
+      revenue: finalTotal,
       transaction_id: faker.string.alphanumeric(16),
       products: store.cart.products.map((item) => ({
         id: item.id,
@@ -135,18 +190,28 @@ const CheckoutContent = () => {
     );
   }
 
-  const subtotal = store.cart.products.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = store.cart.total;
+  const discount = store.cart.discountAmount;
   const shipping = 10;
   const tax = 5;
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal - discount) + shipping + tax;
+  const voucherResult = store.cart.voucherResult;
+
+  const getLineDiscount = (itemId: string): number | null => {
+    if (voucherResult?.type !== "item" || voucherResult.productId !== itemId) return null;
+    const line = store.cart.products.find((p) => p.id === itemId);
+    if (!line) return null;
+    const lineTotal = line.price * line.quantity;
+    return (lineTotal * voucherResult.percent) / 100;
+  };
 
   return (
     <main className="container max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-12">
       <CheckoutTitle />
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:gap-10">
-        {/* Form column */}
-        <div className="flex flex-col gap-6 min-w-0">
+      <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:gap-10 lg:grid-rows-[1fr_auto]">
+        {/* Form column - on small: first; on lg: left column row 1 */}
+        <div className="flex flex-col gap-6 min-w-0 lg:row-start-1 lg:col-start-1">
           <ShippingInformation
             customerName={store.user.name}
             setCustomerName={(e) => store.user.setName(e)}
@@ -187,52 +252,113 @@ const CheckoutContent = () => {
             setBillingSameAsShipping={setBillingSameAsShipping}
           />
 
-          <div className="flex justify-center lg:justify-start pt-2">
-            <button
-              type="button"
-              onClick={completePurchase}
-              className="w-full sm:w-auto rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:opacity-90 font-medium text-sm sm:text-base h-12 px-8 min-w-[200px]"
-            >
-              Complete purchase
-            </button>
+          <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50 p-5 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">
+              Voucher
+            </h2>
+            {store.cart.appliedVoucherCode ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-foreground">
+                  Code <strong>{store.cart.appliedVoucherCode}</strong> applied.
+                  {voucherResult?.type === "item" && (
+                    <span className="text-neutral-500 dark:text-neutral-400"> Single item {voucherResult.percent}% off.</span>
+                  )}
+                  {voucherResult?.type === "cart" && (
+                    <span className="text-neutral-500 dark:text-neutral-400"> Cart {voucherResult.percent}% off.</span>
+                  )}
+                  {voucherResult?.type === "free" && (
+                    <span className="text-neutral-500 dark:text-neutral-400"> Free item added.</span>
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleRemoveVoucher}
+                  className="text-sm font-medium text-foreground underline hover:no-underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <input
+                  type="text"
+                  value={voucherCodeInput}
+                  onChange={(e) => setVoucherCodeInput(e.target.value)}
+                  placeholder="Enter code"
+                  className="flex-1 min-w-0 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-foreground placeholder:text-neutral-400"
+                  aria-label="Voucher code"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyVoucher}
+                  className="rounded-full border border-solid border-transparent bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+            {voucherError && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert">
+                {voucherError}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Order summary - sticky on desktop */}
-        <aside className="lg:sticky lg:top-8 h-fit">
+        {/* Order summary - on small: second (after form); on lg: right column, sticky */}
+        <aside className="lg:sticky lg:top-8 h-fit lg:row-span-2 lg:row-start-1 lg:col-start-2">
           <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50 p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-foreground mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-700">
               Order summary
             </h2>
             <ul className="flex flex-col gap-4 mb-5">
-              {store.cart.products.map((item) => (
-                <li key={item.id} className="flex gap-3">
-                  <div className="relative h-14 w-20 flex-shrink-0 overflow-hidden rounded-md bg-neutral-200 dark:bg-neutral-700">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      width={80}
-                      height={56}
-                      className="object-cover h-full w-full"
-                    />
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-sm font-medium text-foreground truncate">{item.name}</span>
-                    <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                      ${item.price.toFixed(2)} × {item.quantity}
+              {store.cart.products.map((item) => {
+                const lineTotal = item.price * item.quantity;
+                const lineDiscount = getLineDiscount(item.id);
+                const displayTotal = lineDiscount != null ? lineTotal - lineDiscount : lineTotal;
+                const isFreeLine = voucherResult?.type === "free" && voucherResult.productId === item.id;
+                return (
+                  <li key={item.id} className="flex gap-3">
+                    <div className="relative h-14 w-20 flex-shrink-0 overflow-hidden rounded-md bg-neutral-200 dark:bg-neutral-700">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        width={80}
+                        height={56}
+                        className="object-cover h-full w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-sm font-medium text-foreground truncate">{item.name}</span>
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                        {isFreeLine ? (
+                          "Free item"
+                        ) : (
+                          <>${item.price.toFixed(2)} × {item.quantity}</>
+                        )}
+                      </span>
+                      {voucherResult?.type === "item" && voucherResult.productId === item.id && (
+                        <span className="text-xs text-green-600 dark:text-green-400">{voucherResult.percent}% off</span>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-foreground tabular-nums">
+                      ${displayTotal.toFixed(2)}
                     </span>
-                  </div>
-                  <span className="text-sm font-medium text-foreground tabular-nums">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </span>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
             <div className="space-y-2 pt-3 border-t border-neutral-200 dark:border-neutral-700">
               <div className="flex justify-between text-sm text-foreground/80">
                 <span>Subtotal</span>
                 <span className="tabular-nums">${subtotal.toFixed(2)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                  <span>Discount</span>
+                  <span className="tabular-nums">−${discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm text-foreground/80">
                 <span>Shipping</span>
                 <span className="tabular-nums">${shipping.toFixed(2)}</span>
@@ -248,6 +374,17 @@ const CheckoutContent = () => {
             </div>
           </div>
         </aside>
+
+        {/* Complete purchase - on small: third (after order summary); on lg: left column row 2 */}
+        <div className="flex justify-center lg:justify-start pt-2 lg:row-start-2 lg:col-start-1">
+          <button
+            type="button"
+            onClick={completePurchase}
+            className="w-full sm:w-auto rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:opacity-90 font-medium text-sm sm:text-base h-12 px-8 min-w-[200px]"
+          >
+            Complete purchase
+          </button>
+        </div>
       </div>
     </main>
   );
