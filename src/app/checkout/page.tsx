@@ -51,6 +51,8 @@ const CheckoutContent = () => {
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [voucherCodeInput, setVoucherCodeInput] = useState("");
   const [voucherError, setVoucherError] = useState<string | null>(null);
+  // Voucher eligibility from Signals: null = loading, true = eligible (no purchases in last 7 days), false = ineligible
+  const [voucherEligible, setVoucherEligible] = useState<boolean | null>(null);
 
   const catalogForVoucher = banknotes.map((b) => ({
     id: b.id,
@@ -136,6 +138,39 @@ const CheckoutContent = () => {
       router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
     }
   }, [store.user.userId, persistenceLoaded, router, searchParams]);
+
+  // Fetch voucher eligibility from Snowplow Signals (count_purchases in last 7 days)
+  useEffect(() => {
+    if (!persistenceLoaded || !store.user.userId) {
+      setVoucherEligible(null);
+      return;
+    }
+    const params = new URLSearchParams({
+      attribute_key: "count_purchases",
+      identifier: store.user.userId,
+      name: "leos_numismatics_user_id_attribute_service",
+    });
+    fetch(`/api/service-attributes?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Service attributes: ${res.statusText}`);
+        return res.json();
+      })
+      .then((data) => {
+        // Response may be attributes object or { attributes } or nested by group
+        const attrs = data?.attributes ?? data;
+        const count =
+          typeof attrs?.count_purchases === "number"
+            ? attrs.count_purchases
+            : typeof attrs?.leos_numismatics_user_attribute_group?.count_purchases === "number"
+              ? attrs.leos_numismatics_user_attribute_group.count_purchases
+              : 0;
+        setVoucherEligible(count === 0);
+      })
+      .catch(() => {
+        // On error (e.g. no profile yet), treat as eligible so we don't block vouchers
+        setVoucherEligible(true);
+      });
+  }, [persistenceLoaded, store.user.userId]);
 
   const completePurchase = () => {
     const shippingAmount = 10;
@@ -272,7 +307,13 @@ const CheckoutContent = () => {
             setBillingSameAsShipping={setBillingSameAsShipping}
           />
 
-          <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50 p-5 shadow-sm">
+          <div
+            className={
+              voucherEligible === false
+                ? "rounded-xl border-2 border-amber-300 dark:border-amber-600 bg-amber-50/80 dark:bg-amber-950/40 p-5 shadow-sm"
+                : "rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50 p-5 shadow-sm"
+            }
+          >
             <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">
               Voucher
             </h2>
@@ -298,7 +339,11 @@ const CheckoutContent = () => {
                   Remove
                 </button>
               </div>
-            ) : (
+            ) : voucherEligible === false ? (
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200" role="status">
+                Vouchers are not available at this time.
+              </p>
+            ) : voucherEligible === true ? (
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <input
                   type="text"
@@ -316,6 +361,8 @@ const CheckoutContent = () => {
                   Apply
                 </button>
               </div>
+            ) : (
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Checking voucher availability…</p>
             )}
             {voucherError && (
               <p className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert">
