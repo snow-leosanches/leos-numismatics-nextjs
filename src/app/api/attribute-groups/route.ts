@@ -107,7 +107,11 @@ export async function GET(request: Request) {
   }
 
   const version = versionParam ? parseInt(versionParam, 10) : undefined;
-  if (versionParam != null && (Number.isNaN(version) || version < 0)) {
+  const invalidVersion =
+    versionParam != null &&
+    (version === undefined ||
+      (typeof version === "number" && (Number.isNaN(version) || version < 0)));
+  if (invalidVersion) {
     return NextResponse.json(
       {
         error: "Invalid version",
