@@ -139,31 +139,27 @@ const CheckoutContent = () => {
     }
   }, [store.user.userId, persistenceLoaded, router, searchParams]);
 
-  // Fetch voucher eligibility from Snowplow Signals (count_purchases in last 7 days)
+  // Fetch voucher eligibility from Snowplow Signals (count_purchases from attribute group)
   useEffect(() => {
     if (!persistenceLoaded || !store.user.userId) {
       setVoucherEligible(null);
       return;
     }
     const params = new URLSearchParams({
-      attribute_key: "count_purchases",
+      attribute_key: "user_id",
       identifier: store.user.userId,
-      name: "leos_numismatics_user_id_attribute_service",
+      name: "leos_numismatics_user_attribute_group",
+      version: "2",
+      attributes: "count_purchases",
     });
-    fetch(`/api/service-attributes?${params.toString()}`)
+    fetch(`/api/attribute-groups?${params.toString()}`)
       .then((res) => {
-        if (!res.ok) throw new Error(`Service attributes: ${res.statusText}`);
+        if (!res.ok) throw new Error(`Attribute group: ${res.statusText}`);
         return res.json();
       })
       .then((data) => {
-        // Response may be attributes object or { attributes } or nested by group
-        const attrs = data?.attributes ?? data;
         const count =
-          typeof attrs?.count_purchases === "number"
-            ? attrs.count_purchases
-            : typeof attrs?.leos_numismatics_user_attribute_group?.count_purchases === "number"
-              ? attrs.leos_numismatics_user_attribute_group.count_purchases
-              : 0;
+          typeof data?.count_purchases === "number" ? data.count_purchases : 0;
         setVoucherEligible(count === 0);
       })
       .catch(() => {
