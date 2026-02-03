@@ -18,6 +18,11 @@ const LoginContent = () => {
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get('returnUrl') || '/';
 
+  const resetSnowplowSession = () => {
+    snowplowTracker?.clearUserData({ preserveSession: false, preserveUser: false });
+    snowplowTracker?.setUserId(null);
+  };
+
   const performLogin = () => {
     const email = faker.internet.email();
     store.user.setUserId(email);
@@ -48,6 +53,11 @@ const LoginContent = () => {
       <div className="grid gap-4 pb-8">
         <p>Who are you?</p>
         <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto" onClick={performLogin}>Who, who, who, who?</button>
+      </div>
+
+      <div className="grid gap-4 pb-8">
+        <p>Reset Snowplow anonymous session (clears domain/session cookies and user id).</p>
+        <button type="button" className="rounded-full border border-solid border-gray-300 dark:border-gray-600 transition-colors flex items-center justify-center bg-transparent text-foreground gap-2 hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto" onClick={resetSnowplowSession}>Reset Snowplow session</button>
       </div>
 
       <div className="col gap-4 pb-8">

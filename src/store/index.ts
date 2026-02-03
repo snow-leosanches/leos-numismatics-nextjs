@@ -52,9 +52,7 @@ export function useStore(initData?: CartEntity) {
     }
   }, [initData, store]);
 
-  // Return the initialized store, or a fallback for SSR
-  return store || { 
-    cart: new CartStore(), 
-    user: new UserStore() 
-  };
+  // Return the initialized store, or initStore() so we reuse the same singleton
+  // (avoids creating new CartStore on every render and duplicate makePersistable "CartStore" warnings)
+  return store || initStore(initData);
 }
