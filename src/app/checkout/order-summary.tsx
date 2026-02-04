@@ -1,11 +1,7 @@
 import Image from "next/image";
 import { useStore } from "@/store";
 
-export interface OrderSummaryProps {
-
-}
-
-export const OrderSummary: React.FC<OrderSummaryProps> = (props) => {
+export const OrderSummary: React.FC = () => {
     const store = useStore();
 
     const subtotal = store.cart.total;
