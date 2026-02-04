@@ -62,7 +62,7 @@ const BanknoteRowContent: React.FunctionComponent<BanknoteRowProps> = (props) =>
       ],
     });
 
-    // Track using events defined in the Data Product
+    // Track using events defined in the Tracking Plan
     /* trackProductAddedToCartSpec({
       productId: selectedBanknote.id,
       name: selectedBanknote.title,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { faker } from '@faker-js/faker';
 import { observer } from "mobx-react-lite";
@@ -17,10 +17,33 @@ const LoginContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get('returnUrl') || '/';
+  const [manualEmail, setManualEmail] = useState('');
 
   const resetSnowplowSession = () => {
     snowplowTracker?.clearUserData({ preserveSession: false, preserveUser: false });
     snowplowTracker?.setUserId(null);
+  };
+
+  const performManualLogin = () => {
+    const email = manualEmail.trim();
+    if (!email) return;
+    store.user.setUserId(email);
+    store.user.setName('');
+    store.user.setEmail(email);
+    store.user.setAddress('');
+    store.user.setCity('');
+    store.user.setState('');
+    store.user.setZipCode('');
+    store.user.setCountry('');
+
+    snowplowTracker?.setUserId(email);
+
+    trackCustomerIdentificationSpec({
+      email,
+      phone: ''
+    });
+
+    router.push(returnUrl);
   };
 
   const performLogin = () => {
@@ -58,6 +81,34 @@ const LoginContent = () => {
       <div className="grid gap-4 pb-8">
         <p>Reset Snowplow anonymous session (clears domain/session cookies and user id).</p>
         <button type="button" className="rounded-full border border-solid border-gray-300 dark:border-gray-600 transition-colors flex items-center justify-center bg-transparent text-foreground gap-2 hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto" onClick={resetSnowplowSession}>Reset Snowplow session</button>
+      </div>
+
+      <div className="col gap-4 pb-8">
+        <h1 className="text-2xl">Manual Login</h1>
+      </div>
+
+      <div className="grid gap-4 pb-8">
+        <label htmlFor="manual-login-email" className="text-sm font-medium">
+          Email
+        </label>
+        <input
+          id="manual-login-email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={manualEmail}
+          onChange={(e) => setManualEmail(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && performManualLogin()}
+          className="rounded-full border border-solid border-gray-300 dark:border-gray-600 bg-transparent text-foreground px-4 py-2.5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-foreground"
+        />
+        <button
+          type="button"
+          className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
+          onClick={performManualLogin}
+        >
+          Manual Login
+        </button>
       </div>
 
       <div className="col gap-4 pb-8">

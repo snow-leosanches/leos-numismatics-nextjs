@@ -19,7 +19,7 @@ export const CheckoutTitle: React.FunctionComponent = () => {
       payment_method: 'credit-card',
     });
 
-    // Track using events defined in the Data Product
+    // Track using events defined in the Tracking Plan
     /* trackCheckoutStartedSpec({
       cart_id: faker.string.alpha(16),
       timestamp: new Date().getTime(),

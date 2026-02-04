@@ -41,7 +41,7 @@ const YourCartContent = () => {
         category: 'Banknotes'
       }],
     });
-    // Track using events defined in the Data Product
+    // Track using events defined in the Tracking Plan
     /* trackProductRemovedFromCartSpec({
       productId: productId,
       name: name,
