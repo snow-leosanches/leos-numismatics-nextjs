@@ -219,7 +219,7 @@ export type SnowplowEcommerceActionTrackProductViewType = "product_view";
 /**
  * Creates a Snowplow Event Specification entity.
  */
-export function createEventSpecification(eventSpecification: Omit<EventSpecification, 'data_product_domain'> & Partial<Pick<EventSpecification, 'data_product_domain'>>){
+export function createEventSpecification(eventSpecification: EventSpecification){
     return {
         schema:
             'iglu:com.snowplowanalytics.snowplow/event_specification/jsonschema/1-0-3',
@@ -235,7 +235,7 @@ interface EventSpecification {
     name: string;
     data_product_id: string;
     data_product_name: string;
-    data_product_domain?: string;
+    data_product_domain: string;
 }
 
 type ContextsOrTimestamp<T = any> = Omit<CommonEventProperties<T>, 'context'> & { context?: SelfDescribingJson<T>[] | null | undefined }
@@ -273,7 +273,7 @@ export function createWishlistAction(wishlistAction: WishlistAction){
 export function trackCustomerIdentification<T extends {} = any>(customerIdentification: CustomerIdentification & ContextsOrTimestamp<T>, trackers?: string[]){
     const { context, timestamp, ...data } = customerIdentification;
     const event: SelfDescribingJson = {
-        schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
+        schema: 'iglu:com.leosenterprises/customer_identification/jsonschema/1-0-0',
         data
     };
 
@@ -289,7 +289,7 @@ export function trackCustomerIdentification<T extends {} = any>(customerIdentifi
  */
 export function createCustomerIdentification(customerIdentification: CustomerIdentification){
     return {
-        schema: 'iglu:com.leosnumismatics/customer_identification/jsonschema/1-0-0',
+        schema: 'iglu:com.leosenterprises/customer_identification/jsonschema/1-0-0',
         data: customerIdentification
     }
 }
@@ -578,7 +578,7 @@ function trackSnowplowEcommerceActionTrackProductView<T extends {} = any>(snowpl
  * ID: 1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3
  */
 export function trackAddToWishlistSpec(addToWishlist: WishlistAction & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3',
         name: 'Add to wishlist',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -602,7 +602,7 @@ export function trackAddToWishlistSpec(addToWishlist: WishlistAction & ContextsO
  * ID: 75178748-ae15-4828-b9f4-b49ee638a841
  */
 export function trackCustomerIdentificationSpec(customerIdentification: CustomerIdentification & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '75178748-ae15-4828-b9f4-b49ee638a841',
         name: 'Customer Identification',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -626,7 +626,7 @@ export function trackCustomerIdentificationSpec(customerIdentification: Customer
  * ID: 90ac7e50-90e8-43ee-ae75-532a428b01c2
  */
 export function trackVoucherAppliedSpec(voucherApplied: VoucherApplied & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '90ac7e50-90e8-43ee-ae75-532a428b01c2',
         name: 'Voucher Applied',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -650,7 +650,7 @@ export function trackVoucherAppliedSpec(voucherApplied: VoucherApplied & Context
  * ID: fbe39734-dbab-4170-8722-878fd0973c29
  */
 export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'fbe39734-dbab-4170-8722-878fd0973c29',
         name: 'Update Profile',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -676,7 +676,7 @@ export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & Contex
  * ID: 2713682c-0405-4caf-85c6-ea6d9ae23b75
  */
 export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '2713682c-0405-4caf-85c6-ea6d9ae23b75',
         name: 'Internal promotion view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -701,7 +701,7 @@ export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPro
  * ID: 33afb089-2070-4e43-a261-53066b9cea43
  */
 export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '33afb089-2070-4e43-a261-53066b9cea43',
         name: 'Product list view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -726,7 +726,7 @@ export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & E
  * ID: 3eb11c24-27fb-4b13-94e2-aa3c4d242e9c
  */
 export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '3eb11c24-27fb-4b13-94e2-aa3c4d242e9c',
         name: 'Add to cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -751,7 +751,7 @@ export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEv
  * ID: 538d7168-b6ea-46ab-b529-24035974d6d2
  */
 export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: '538d7168-b6ea-46ab-b529-24035974d6d2',
         name: 'Internal promotion click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -776,7 +776,7 @@ export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPP
  * ID: aef9adcb-660a-4d20-86ba-7ba040600a4d
  */
 export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'aef9adcb-660a-4d20-86ba-7ba040600a4d',
         name: 'Remove from cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -801,7 +801,7 @@ export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonE
  * ID: b5b53547-0128-436c-b0ce-87b623008b6a
  */
 export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'b5b53547-0128-436c-b0ce-87b623008b6a',
         name: 'Refund',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -826,7 +826,7 @@ export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventP
  * ID: ba719d07-7f68-4090-8c18-b75f0dd848e8
  */
 export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.CommonEcommerceEventProperties<Demographics>, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'ba719d07-7f68-4090-8c18-b75f0dd848e8',
         name: 'Transaction',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -851,7 +851,7 @@ export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.Comm
  * ID: bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0
  */
 export function trackTransactionErrorSpec(transactionError: Ecom.TransactionError & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0',
         name: 'Transaction Error',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -876,7 +876,7 @@ export function trackTransactionErrorSpec(transactionError: Ecom.TransactionErro
  * ID: d1a0e8ce-2130-495f-b8db-1d950c23f9b5
  */
 export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'd1a0e8ce-2130-495f-b8db-1d950c23f9b5',
         name: 'Checkout step',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -901,7 +901,7 @@ export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.Com
  * ID: d4010334-dd01-443f-a065-683b00ee0ac9
  */
 export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'd4010334-dd01-443f-a065-683b00ee0ac9',
         name: 'Product list click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
@@ -926,7 +926,7 @@ export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent 
  * ID: e35e222f-93d9-49e0-9a02-9d39d813de70
  */
 export function trackTrackProductViewSpec(trackProductView: Ecom.Product & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext = createEventSpecification({
+    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
         id: 'e35e222f-93d9-49e0-9a02-9d39d813de70',
         name: 'Track product view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
