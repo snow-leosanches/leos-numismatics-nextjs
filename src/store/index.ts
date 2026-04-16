@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { CartStore } from './cart';
 import { CartEntity } from './entities/cart';
 import { UserStore } from './user';
+import { OrderHistoryStore } from './order-history';
 
 // enable static rendering ONLY on server
 enableStaticRendering(typeof window === "undefined")
@@ -13,12 +14,14 @@ enableStaticRendering(typeof window === "undefined")
 // init a client store that we will send to client (one store for client)
 let cartStore: CartStore;
 let userStore: UserStore;
+let orderHistoryStore: OrderHistoryStore;
 
 const initStore = (initData?: CartEntity) => {
   // check if we already declare store (client Store), otherwise create one
-  const store = { 
+  const store = {
     cart: cartStore ?? new CartStore(),
-    user: userStore ?? new UserStore()
+    user: userStore ?? new UserStore(),
+    orderHistory: orderHistoryStore ?? new OrderHistoryStore()
   };
 
   // hydrate to store if receive initial data
@@ -28,9 +31,10 @@ const initStore = (initData?: CartEntity) => {
 
   // Create a store on every server request
   if (typeof window === "undefined") return store;
-  // Otherwise it's client, remember this store and return 
+  // Otherwise it's client, remember this store and return
   if (!cartStore) cartStore = store.cart;
   if (!userStore) userStore = store.user;
+  if (!orderHistoryStore) orderHistoryStore = store.orderHistory;
   return store;
 }
 

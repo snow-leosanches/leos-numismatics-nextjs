@@ -219,10 +219,10 @@ export type SnowplowEcommerceActionTrackProductViewType = "product_view";
 /**
  * Creates a Snowplow Event Specification entity.
  */
-export function createEventSpecification(eventSpecification: EventSpecification){
+export function createEventSpecification(eventSpecification: Omit<EventSpecification, 'data_product_domain'> & Partial<Pick<EventSpecification, 'data_product_domain'>>){
     return {
         schema:
-            'iglu:com.snowplowanalytics.snowplow/event_specification/jsonschema/1-0-3',
+            'iglu:com.snowplowanalytics.snowplow/event_specification/jsonschema/1-0-4',
         data: eventSpecification,
     }
 }
@@ -232,10 +232,11 @@ export function createEventSpecification(eventSpecification: EventSpecification)
  */
 interface EventSpecification {
     id: string;
+    version: number;
     name: string;
     data_product_id: string;
     data_product_name: string;
-    data_product_domain: string;
+    data_product_domain?: string;
 }
 
 type ContextsOrTimestamp<T = any> = Omit<CommonEventProperties<T>, 'context'> & { context?: SelfDescribingJson<T>[] | null | undefined }
@@ -578,8 +579,9 @@ function trackSnowplowEcommerceActionTrackProductView<T extends {} = any>(snowpl
  * ID: 1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3
  */
 export function trackAddToWishlistSpec(addToWishlist: WishlistAction & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '1b7c15e7-f8e3-4ff1-a91b-74e566eb66e3',
+        version: 1,
         name: 'Add to wishlist',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -602,8 +604,9 @@ export function trackAddToWishlistSpec(addToWishlist: WishlistAction & ContextsO
  * ID: 75178748-ae15-4828-b9f4-b49ee638a841
  */
 export function trackCustomerIdentificationSpec(customerIdentification: CustomerIdentification & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '75178748-ae15-4828-b9f4-b49ee638a841',
+        version: 2,
         name: 'Customer Identification',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -626,8 +629,9 @@ export function trackCustomerIdentificationSpec(customerIdentification: Customer
  * ID: 90ac7e50-90e8-43ee-ae75-532a428b01c2
  */
 export function trackVoucherAppliedSpec(voucherApplied: VoucherApplied & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '90ac7e50-90e8-43ee-ae75-532a428b01c2',
+        version: 1,
         name: 'Voucher Applied',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -650,8 +654,9 @@ export function trackVoucherAppliedSpec(voucherApplied: VoucherApplied & Context
  * ID: fbe39734-dbab-4170-8722-878fd0973c29
  */
 export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & ContextsOrTimestamp, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'fbe39734-dbab-4170-8722-878fd0973c29',
+        version: 1,
         name: 'Update Profile',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -676,8 +681,9 @@ export function trackUpdateProfileSpec(updateProfile: UpdateUserProfile & Contex
  * ID: 2713682c-0405-4caf-85c6-ea6d9ae23b75
  */
 export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '2713682c-0405-4caf-85c6-ea6d9ae23b75',
+        version: 0,
         name: 'Internal promotion view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -701,8 +707,9 @@ export function trackInternalPromotionViewSpec(internalPromotionView: Ecom.SPPro
  * ID: 33afb089-2070-4e43-a261-53066b9cea43
  */
 export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '33afb089-2070-4e43-a261-53066b9cea43',
+        version: 0,
         name: 'Product list view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -726,8 +733,9 @@ export function trackProductListViewSpec(productListView: Ecom.ListViewEvent & E
  * ID: 3eb11c24-27fb-4b13-94e2-aa3c4d242e9c
  */
 export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '3eb11c24-27fb-4b13-94e2-aa3c4d242e9c',
+        version: 0,
         name: 'Add to cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -751,8 +759,9 @@ export function trackAddToCartSpec(addToCart: Ecom.Cart & Ecom.CommonEcommerceEv
  * ID: 538d7168-b6ea-46ab-b529-24035974d6d2
  */
 export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPPromotion & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: '538d7168-b6ea-46ab-b529-24035974d6d2',
+        version: 0,
         name: 'Internal promotion click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -776,8 +785,9 @@ export function trackInternalPromotionClickSpec(internalPromotionClick: Ecom.SPP
  * ID: aef9adcb-660a-4d20-86ba-7ba040600a4d
  */
 export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'aef9adcb-660a-4d20-86ba-7ba040600a4d',
+        version: 0,
         name: 'Remove from cart',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -801,8 +811,9 @@ export function trackRemoveFromCartSpec(removeFromCart: Ecom.Cart & Ecom.CommonE
  * ID: b5b53547-0128-436c-b0ce-87b623008b6a
  */
 export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'b5b53547-0128-436c-b0ce-87b623008b6a',
+        version: 0,
         name: 'Refund',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -826,8 +837,9 @@ export function trackRefundSpec(refund: Ecom.Refund & Ecom.CommonEcommerceEventP
  * ID: ba719d07-7f68-4090-8c18-b75f0dd848e8
  */
 export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.CommonEcommerceEventProperties<Demographics>, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'ba719d07-7f68-4090-8c18-b75f0dd848e8',
+        version: 1,
         name: 'Transaction',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -851,8 +863,9 @@ export function trackTransactionSpec(transaction: Ecom.SPTransaction & Ecom.Comm
  * ID: bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0
  */
 export function trackTransactionErrorSpec(transactionError: Ecom.TransactionError & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'bc9ec5cd-f1e5-4f4e-a67f-3edd41da84a0',
+        version: 0,
         name: 'Transaction Error',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -876,8 +889,9 @@ export function trackTransactionErrorSpec(transactionError: Ecom.TransactionErro
  * ID: d1a0e8ce-2130-495f-b8db-1d950c23f9b5
  */
 export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'd1a0e8ce-2130-495f-b8db-1d950c23f9b5',
+        version: 0,
         name: 'Checkout step',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -901,8 +915,9 @@ export function trackCheckoutStepSpec(checkoutStep: Ecom.CheckoutStep & Ecom.Com
  * ID: d4010334-dd01-443f-a065-683b00ee0ac9
  */
 export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'd4010334-dd01-443f-a065-683b00ee0ac9',
+        version: 0,
         name: 'Product list click',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',
@@ -926,8 +941,9 @@ export function trackProductListClickSpec(productListClick: Ecom.ListClickEvent 
  * ID: e35e222f-93d9-49e0-9a02-9d39d813de70
  */
 export function trackTrackProductViewSpec(trackProductView: Ecom.Product & Ecom.CommonEcommerceEventProperties, trackers?: string[]){
-    const eventSpecificationContext: SelfDescribingJson<EventSpecification> = createEventSpecification({ 
+    const eventSpecificationContext = createEventSpecification({
         id: 'e35e222f-93d9-49e0-9a02-9d39d813de70',
+        version: 0,
         name: 'Track product view',
         data_product_id: '940ca3a3-6882-4567-b7b3-f57189bcc49d',
         data_product_name: 'Leo&#x27;s Numismatics Tracking Plan',

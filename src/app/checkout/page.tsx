@@ -111,6 +111,7 @@ const CheckoutContent = () => {
     const shippingAmount = 10;
     const taxAmount = 5;
     const finalTotal = store.cart.totalAfterDiscount + shippingAmount + taxAmount;
+    const transactionId = faker.string.alphanumeric(16);
     // Track using "Checkout Step" event from the Snowplow Ecommerce Plugin
     trackTransaction({
       currency: 'USD',
@@ -118,7 +119,7 @@ const CheckoutContent = () => {
       shipping: shippingAmount,
       tax: taxAmount,
       revenue: finalTotal,
-      transaction_id: faker.string.alphanumeric(16),
+      transaction_id: transactionId,
       products: store.cart.products.map((item) => ({
         id: item.id,
         name: item.name,
@@ -136,6 +137,26 @@ const CheckoutContent = () => {
           zip_code: store.user.zipCode
         }
       }]
+    });
+
+    store.orderHistory.addOrder({
+      id: transactionId,
+      date: new Date().toISOString(),
+      products: store.cart.products.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        currency: item.currency,
+        imageUrl: item.imageUrl,
+      })),
+      subtotal: store.cart.total,
+      discount: store.cart.discountAmount,
+      shipping: shippingAmount,
+      tax: taxAmount,
+      total: finalTotal,
+      paymentMethod,
+      shippingMethod,
     });
 
     // Track using events defined in the Tracking Plan

@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 
 import { Footer } from "@/components/footer";
+import { NewsletterSubscribe } from "@/components/newsletter-subscribe";
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,7 @@ export default function Home() {
           </a>
         </div>
       </main>
+      <NewsletterSubscribe />
       <Footer />
     </div>
   );

@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 
 import { useStore } from "@/store";
 import { snowplowTracker } from "../../components/snowplow-tracker";
+import PurchaseHistoryPanel from "../../components/purchase-history-panel";
 
 export const dynamic = 'force-dynamic';
 
@@ -74,6 +75,10 @@ const Account = () => {
       <p className="text-lg">State: {store.user.state}</p>
       <p className="text-lg">Zip Code: {store.user.zipCode}</p>
       <p className="text-lg">Country: {store.user.country}</p>
+    </div>
+
+    <div className="col gap-4 py-8">
+      <PurchaseHistoryPanel />
     </div>
   </main>
 }
